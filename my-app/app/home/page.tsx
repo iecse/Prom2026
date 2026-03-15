@@ -1,6 +1,5 @@
-
-export default function Home() {
-  return (
-    <div>Starting this SHIT hell yeaaaaahhhhhhhh</div>
-  );
+export default function home() {
+    return (
+        <div>STARTING THIS SHIT</div>
+    );
 }
