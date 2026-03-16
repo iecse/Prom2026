@@ -153,7 +153,7 @@ export default function CTASection() {
         >
           <motion.a
             href="/register"
-            className="px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-bold text-lg uppercase tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 relative overflow-hidden group"
+            className="px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-bold text-lg uppercase tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 relative overflow-hidden group flex items-center justify-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -164,7 +164,7 @@ export default function CTASection() {
               transition={{ duration: 0.4 }}
               style={{ originX: 0 }}
             />
-            <span className="relative z-10">⚡ Register for Prometheus</span>
+            <span className="relative z-10 text-center">⚡ Register for Prometheus</span>
           </motion.a>
         </motion.div>
 

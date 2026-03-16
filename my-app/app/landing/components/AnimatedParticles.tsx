@@ -60,7 +60,8 @@ export default function AnimatedParticles() {
 
     const initParticles = () => {
       particles = [];
-      for (let i = 0; i < 150; i++) {
+      const particleCount = W < 768 ? 80 : 600;
+      for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle());
       }
     };

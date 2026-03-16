@@ -19,7 +19,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: 'easeOut' },
+    transition: { duration: 0.8 },
   },
 };
 
@@ -28,7 +28,7 @@ const buttonVariants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.8, ease: 'backOut' },
+    transition: { duration: 0.8 },
   },
   whileHover: {
     scale: 1.05,
@@ -111,25 +111,28 @@ export default function HeroSection() {
 
       {/* Content */}
       <motion.div
-        className="relative z-10 text-center px-4 max-w-4xl mx-auto"
+        className="relative z-10 text-center px-3 sm:px-4 md:px-6 w-full"
+        style={{ maxWidth: 'clamp(280px, 90vw, 1200px)' }}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Subtitle */}
         <motion.div
-          className="text-sm md:text-lg font-mono text-cyan-400 tracking-widest mb-4 uppercase"
+          className="text-xs sm:text-sm md:text-base lg:text-lg font-mono text-cyan-400 tracking-widest mb-3 sm:mb-4 md:mb-6 uppercase"
           variants={itemVariants}
         >
           IECSE Presents
         </motion.div>
 
         {/* Glitch Title */}
-        <motion.div className="relative mb-6" variants={itemVariants}>
+        <motion.div className="relative mb-4 sm:mb-5 md:mb-6 lg:mb-8" variants={itemVariants}>
           <h1
-            className="glitch-title text-5xl md:text-8xl font-black tracking-wider text-white drop-shadow-lg"
+            className="glitch-title text-5xl sm:text-7xl md:text-5xl lg:text-7xl xl:text-8xl font-black tracking-wider text-white drop-shadow-lg leading-tight"
             style={{
               textShadow: '0 0 20px rgba(0, 245, 255, 0.8), 0 0 40px rgba(0, 245, 255, 0.4)',
+              wordSpacing: 'normal',
+              letterSpacing: '-0.02em',
             }}
           >
             PROMETHEUS
@@ -138,12 +141,12 @@ export default function HeroSection() {
 
         {/* Tagline */}
         <motion.p
-          className="text-lg md:text-2xl text-gray-300 mb-8 font-light tracking-wide"
+          className="hidden md:block text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-gray-300 mb-6 sm:mb-8 md:mb-10 lg:mb-12 font-light tracking-wide leading-relaxed"
           variants={itemVariants}
         >
           Where <span className="text-magenta-500 font-semibold">innovation</span> meets the edge of
           possibility.
-          <br />
+          <br className="hidden sm:block" />
           Push limits. Break barriers. Build the future.
         </motion.p>
 
