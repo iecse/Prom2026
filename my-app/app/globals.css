@@ -3,11 +3,37 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --cyan: #00f5ff;
+  --magenta: #ff00ff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-cyan: {
+    50: #f0ffff;
+    100: #e0ffff;
+    200: #a8ffff;
+    300: #6fffff;
+    400: #00f5ff;
+    500: #00d9ff;
+    600: #0099cc;
+    700: #006699;
+    800: #003d66;
+    900: #001f33;
+  };
+  --color-magenta: {
+    50: #fff0ff;
+    100: #ffe0ff;
+    200: #ffb3ff;
+    300: #ff66ff;
+    400: #ff00ff;
+    500: #e600e6;
+    600: #cc00cc;
+    700: #990099;
+    800: #660066;
+    900: #330033;
+  };
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
