@@ -13,6 +13,119 @@ interface Event {
   tags: string[];
 }
 
+// Flip card component
+function FlipCard({ event, isLeft, index }: { event: Event; isLeft: boolean; index: number }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return (
+    <div 
+      className={`flip-card ${isMobile ? 'flip-card-mobile' : ''}`}
+      onClick={(e) => {
+        if (isMobile) {
+          const inner = (e.currentTarget as HTMLDivElement).querySelector('.flip-inner');
+          if (inner) {
+            inner.classList.toggle('flipped');
+          }
+        }
+      }}
+    >
+      <div className="flip-inner">
+        {/* Front face */}
+        <div className="flip-front bg-gradient-to-br from-cyan-400/10 to-magenta-600/5 border border-cyan-400/30 backdrop-blur-lg">
+          <div className="flex flex-col justify-center items-center text-center h-full gap-2">
+            <div
+              className={`text-xs font-mono ${isLeft ? 'text-magenta-400' : 'text-cyan-400'} tracking-widest uppercase`}
+            >
+              {event.num}
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight px-4">
+              {event.title}
+            </h3>
+            <div className="text-xs md:text-sm text-gray-400 font-mono mt-2">{event.time}</div>
+            <div className="text-xs text-cyan-400/60 font-mono mt-3 uppercase tracking-wide">
+              {!isMobile ? 'Hover to reveal →' : 'Tap to reveal →'}
+            </div>
+          </div>
+        </div>
+
+        {/* Back face */}
+        <div className="flip-back bg-gradient-to-br from-magenta-500/10 to-cyan-400/5 border border-magenta-400/30 backdrop-blur-lg flex flex-col justify-between">
+          <div className="overflow-y-auto flex-1">
+            <p className="text-sm text-gray-200 leading-relaxed mb-4">{event.description}</p>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {event.tags.map((tag, i) => (
+                <span
+                  key={i}
+                  className={`text-xs font-mono px-2 py-1 rounded border ${
+                    isLeft
+                      ? 'border-magenta-500/50 text-magenta-300'
+                      : 'border-cyan-400/50 text-cyan-300'
+                  }`}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+          <button
+            className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-magenta-500 text-white text-sm font-bold rounded hover:from-cyan-400 hover:to-magenta-400 transition-all duration-300 transform hover:scale-105 w-full"
+          >
+            READ MORE
+          </button>
+        </div>
+      </div>
+      <style jsx>{`
+        .flip-card {
+          width: 100%;
+          min-height: 240px;
+          perspective: 1200px;
+          cursor: pointer;
+        }
+
+        .flip-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+          transform-style: preserve-3d;
+        }
+
+        .flip-card:hover .flip-inner {
+          transform: rotateY(180deg);
+        }
+
+        .flip-card-mobile .flip-inner.flipped {
+          transform: rotateY(180deg);
+        }
+
+        .flip-front,
+        .flip-back {
+          position: absolute;
+          inset: 0;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          border-radius: 12px;
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .flip-back {
+          transform: rotateY(180deg);
+        }
+      `}</style>
+    </div>
+  );
+}
+
 const EVENTS: Event[] = [
   {
     id: 1,
@@ -141,37 +254,6 @@ function useTimelineScroll(eventCount: number) {
 
 export default function TimelineSection() {
   const { sectionRef, spineProgress, visibleEvents } = useTimelineScroll(EVENTS.length);
-  const eventRowsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-  const handleCardClick = (index: number) => {
-    const card = eventRowsRef.current[index];
-    if (!card) return;
-
-    const details = card.querySelector('.card-details');
-    if (!details) return;
-
-    const isOpen = card.classList.contains('open');
-
-    if (isOpen) {
-      card.classList.remove('open');
-      gsap.to(details, {
-        maxHeight: 0,
-        opacity: 0,
-        marginTop: 0,
-        duration: 0.4,
-        ease: 'power2.out',
-      });
-    } else {
-      card.classList.add('open');
-      gsap.to(details, {
-        maxHeight: 200,
-        opacity: 1,
-        marginTop: 16,
-        duration: 0.4,
-        ease: 'power2.out',
-      });
-    }
-  };
 
   return (
     <section
@@ -230,9 +312,6 @@ export default function TimelineSection() {
               return (
                 <div
                   key={event.id}
-                  ref={(el) => {
-                    eventRowsRef.current[index] = el;
-                  }}
                   className={`event-row flex ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'} relative transition-all duration-600`}
                   style={{
                     opacity: isVisible ? 1 : 0,
@@ -243,57 +322,15 @@ export default function TimelineSection() {
                   }}
                 >
                   {/* Dot */}
-                  <div className="absolute left-1/2 top-6 w-4 h-4 bg-gray-950 border-2 border-cyan-400 rounded-full transform -translate-x-1/2 hidden md:block timeline-dot z-20" />
+                  <div className="absolute left-1/2 top-16 w-4 h-4 bg-gray-950 border-2 border-cyan-400 rounded-full transform -translate-x-1/2 hidden md:block timeline-dot z-20" />
 
                   {/* Card container */}
-                  <div className={`w-full md:w-1/2 px-4 md:px-8 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
-                    <motion.div
-                      className="bg-gradient-to-br from-cyan-400/10 to-magenta-600/5 border border-cyan-400/30 backdrop-blur-lg rounded-lg p-6 cursor-pointer group hover:border-cyan-400/60 transition-all duration-300"
-                      whileHover={{
-                        y: -8,
-                        boxShadow: '0 20px 40px rgba(0, 245, 255, 0.2)',
-                      }}
-                      onClick={() => handleCardClick(index)}
+                  <div className={`w-full md:w-1/2 px-4 md:px-8`}>
+                    <div
+                      className={`flex ${isLeft ? 'md:justify-end' : 'md:justify-start'}`}
                     >
-                      {/* Header */}
-                      <div
-                        className={`flex ${isLeft ? 'md:flex-row-reverse' : 'md:flex-row'} items-start justify-between gap-4 mb-3`}
-                      >
-                        <div>
-                          <div
-                            className={`text-xs font-mono ${isLeft ? 'text-magenta-400' : 'text-cyan-400'} tracking-widest mb-1 uppercase`}
-                          >
-                            {event.num}
-                          </div>
-                          <h3 className="text-xl md:text-2xl font-bold text-white">{event.title}</h3>
-                          <div className="text-xs md:text-sm text-gray-400 font-mono mt-2">{event.time}</div>
-                        </div>
-                        <div className={`text-sm text-cyan-400 transition-transform ${isLeft ? 'md:rotate-180' : ''}`}>
-                          ▼
-                        </div>
-                      </div>
-
-                      {/* Details (collapsible) */}
-                      <div className="card-details max-h-0 overflow-hidden opacity-0">
-                        <p className="text-sm text-gray-300 leading-relaxed border-t border-cyan-400/20 pt-4 mb-3">
-                          {event.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {event.tags.map((tag, i) => (
-                            <span
-                              key={i}
-                              className={`text-xs font-mono px-2 py-1 rounded border ${
-                                isLeft
-                                  ? 'border-magenta-500/50 text-magenta-400'
-                                  : 'border-cyan-400/50 text-cyan-400'
-                              }`}
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
+                      <FlipCard event={event} isLeft={isLeft} index={index} />
+                    </div>
                   </div>
                 </div>
               );
