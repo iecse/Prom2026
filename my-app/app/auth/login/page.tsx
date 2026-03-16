@@ -41,7 +41,7 @@ export default function Login() {
 
             <p className="text-sm text-gray-700">
                 New here?{" "}
-                <Link href="/user/register" className="font-semibold text-green-700 hover:underline">
+                <Link href="/auth/register" className="font-semibold text-green-700 hover:underline">
                     Create an account
                 </Link>
             </p>

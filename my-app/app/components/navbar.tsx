@@ -1,5 +1,5 @@
 import Image from "next/image";
-import RegisterButton from "./registerButton";
+import RegisterButton from "./loginButton";
 
 export default function Navbar() {
     return (
