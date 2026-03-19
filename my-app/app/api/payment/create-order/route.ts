@@ -13,12 +13,11 @@ function ensureEnv(name: string): string {
   return value;
 }
 
-function buildUpiLink(orderId: string, amount: number): string {
+function buildUpiLink(orderId: string): string {
   const upiId = encodeURIComponent(ensureEnv('UPI_ID'));
   const payeeName = encodeURIComponent(ensureEnv('UPI_NAME'));
-  const am = encodeURIComponent(amount.toFixed(2));
   const tr = encodeURIComponent(orderId);
-  return `upi://pay?pa=${upiId}&pn=${payeeName}}&cu=INR&tr=${tr}`;
+  return `upi://pay?pa=${upiId}&pn=${payeeName}&cu=INR&tr=${tr}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -49,7 +48,7 @@ export async function POST(req: NextRequest) {
         await existing.save();
       }
 
-      const upiLink = buildUpiLink(existing.orderId, existing.amount);
+      const upiLink = buildUpiLink(existing.orderId);
       const qrDataUrl = await QRCode.toDataURL(upiLink);
       return NextResponse.json({
         orderId: existing.orderId,
@@ -61,7 +60,7 @@ export async function POST(req: NextRequest) {
     }
 
     const orderId = crypto.randomUUID();
-    const upiLink = buildUpiLink(orderId, amount);
+    const upiLink = buildUpiLink(orderId);
     const qrDataUrl = await QRCode.toDataURL(upiLink);
 
     await Order.create({
