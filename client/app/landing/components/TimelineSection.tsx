@@ -129,8 +129,8 @@ function FlipCard({ event, isLeft, index }: { event: Event; isLeft: boolean; ind
 const EVENTS: Event[] = [
   {
     id: 1,
-    num: '01 // CEREMONY',
-    title: 'Opening Ceremony',
+    num: '01 // WORKSHOP',
+    title: 'Design Workshop',
     time: '09:00 — DAY 1',
     description:
       'Kickstart the future with a high-energy launch ceremony featuring keynote addresses from industry pioneers and tech visionaries.',
@@ -147,35 +147,35 @@ const EVENTS: Event[] = [
   },
   {
     id: 3,
-    num: '03 // SPRINT',
-    title: 'Web Dev Sprint',
+    num: '03 // CHALLENGE',
+    title: 'Enigma',
     time: '14:00 — DAY 1',
     description:
-      'A pulse-pounding 3-hour sprint where teams compete to build fully-functional web applications from scratch.',
+      'ML contest',
     tags: ['COMPETITION', 'REACT', '3 HOURS'],
   },
   {
     id: 4,
     num: '04 // CHALLENGE',
-    title: 'Algorithm Coding Challenge',
+    title: 'Order of Chaos 2',
     time: '10:00 — DAY 2',
     description:
-      'Test your algorithmic thinking against the sharpest minds with multi-tiered problem sets.',
+      'OOC',
     tags: ['COMPETITIVE', 'ALGORITHMS', 'LEADERBOARD'],
   },
   {
     id: 5,
     num: '05 // TALK',
-    title: 'Tech Talk: Future of AI',
+    title: 'Tech Quiz',
     time: '14:30 — DAY 2',
     description:
-      'An electrifying panel discussion featuring founders, researchers, and engineers discussing where technology is headed.',
+      'Tech Quiz',
     tags: ['PANEL', 'AGI', 'Q&A'],
   },
   {
     id: 6,
     num: '06 // FINALE',
-    title: 'Closing Ceremony',
+    title: 'Near Protocol Talk',
     time: '18:00 — DAY 2',
     description:
       'Celebrate the best and brightest at the grand awards ceremony with prizes worth ₹2,00,000+.',
