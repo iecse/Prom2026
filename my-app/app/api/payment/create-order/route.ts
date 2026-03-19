@@ -18,7 +18,7 @@ function buildUpiLink(orderId: string, amount: number): string {
   const payeeName = encodeURIComponent(ensureEnv('UPI_NAME'));
   const am = encodeURIComponent(amount.toFixed(2));
   const tr = encodeURIComponent(orderId);
-  return `upi://pay?pa=${upiId}&pn=${payeeName}&am=${am}&cu=INR&tr=${tr}`;
+  return `upi://pay?pa=${upiId}&pn=${payeeName}}&cu=INR&tr=${tr}`;
 }
 
 export async function POST(req: NextRequest) {
