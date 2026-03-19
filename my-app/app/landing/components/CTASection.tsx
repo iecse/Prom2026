@@ -24,16 +24,20 @@ export default function CTASection() {
     if (!section) return;
 
     // Animate grid lines on scroll
-    gsap.to('.grid-line', {
-      opacity: [0, 0.5],
-      duration: 1,
-      scrollTrigger: {
-        trigger: section,
-        start: 'top 80%',
-        end: 'top 50%',
-        scrub: 1,
-      },
-    });
+    gsap.fromTo(
+      '.grid-line',
+      { opacity: 0 },
+      {
+        opacity: 0.5,
+        duration: 1,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+          end: 'top 50%',
+          scrub: 1,
+        },
+      }
+    );
 
     // Animate title text
     gsap.fromTo(

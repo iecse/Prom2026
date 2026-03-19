@@ -2,17 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireUser } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 
-interface Params {
-  params: { eventName: string };
-}
+type Params = Promise<{ eventName: string }>;
 
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: { params: Params }) {
   await connectDB();
   const userOrResponse = await requireUser(req);
   if (userOrResponse instanceof Response) return userOrResponse;
 
   try {
-    const { eventName } = params;
+    const { eventName } = await params;
     const initialLength = userOrResponse.registeredEvents.length;
 
     userOrResponse.registeredEvents = userOrResponse.registeredEvents.filter(

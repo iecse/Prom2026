@@ -18,13 +18,13 @@ export default function AnimatedParticles() {
     let particles: any[] = [];
 
     class Particle {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      r: number;
-      cyan: boolean;
-      alpha: number;
+      x = 0;
+      y = 0;
+      vx = 0;
+      vy = 0;
+      r = 1;
+      cyan = false;
+      alpha = 0.5;
 
       constructor() {
         this.reset();
