@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { events } from './components/events';
 import NeonShell from '@/app/components/NeonShell';
+import { createPortal } from 'react-dom';
 
 interface RegisterResponse {
   message?: string;
@@ -45,6 +46,8 @@ export default function EventsPage() {
   const router = useRouter();
   const [status, setStatus] = useState<Record<string, EventState>>({});
   const [statusLoading, setStatusLoading] = useState(true);
+  const [freePass, setFreePass] = useState(false);
+  const [paymentPrompt, setPaymentPrompt] = useState<{ open: boolean; eventId: string | null }>({ open: false, eventId: null });
 
   const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
@@ -60,6 +63,7 @@ export default function EventsPage() {
         if (!res.ok) return;
 
         const registeredEvents = (data?.user?.registeredEvents as Array<{ eventName?: string }> | undefined) || [];
+        setFreePass(Boolean(data?.user?.freePass));
         const initial: Record<string, EventState> = {};
 
         events.forEach((ev) => {
@@ -96,9 +100,15 @@ export default function EventsPage() {
   }, []);
 
   const handleRegister = async (eventId: string) => {
+    const event = events.find((ev) => ev.id === eventId);
     const token = getToken();
     if (!token) {
       router.push('/auth/login');
+      return;
+    }
+
+    if (event?.requiresPass && !freePass) {
+      setPaymentPrompt({ open: true, eventId });
       return;
     }
 
@@ -172,17 +182,9 @@ export default function EventsPage() {
   return (
     <NeonShell headline="Events" subhead="Register for Prometheus events. Payment-required events need completed payment status.">
       <div className="flex flex-col gap-8">
-        <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Events</p>
-            <h1 className="text-3xl font-semibold text-white">Choose your track</h1>
-          </div>
-          <Link
-            href="/auth/profile"
-            className="inline-flex items-center justify-center rounded-md border border-cyan-400/40 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-white/5 transition-colors"
-          >
-            View profile
-          </Link>
+        <header className="flex flex-col gap-2">
+          <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Events</p>
+          <h1 className="text-3xl font-semibold text-white">Choose your track</h1>
         </header>
 
         <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -194,14 +196,20 @@ export default function EventsPage() {
                   <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">{event.date}</p>
                   <h2 className="text-xl font-semibold text-white">{event.title}</h2>
                   <p className="text-sm text-gray-300">{event.time}</p>
+                  {event.prizePool > 0 ? (
+                    <p className="text-base font-bold text-cyan-300">Prize pool: ₹{event.prizePool.toLocaleString()}</p>
+                  ) : null}
                 </div>
 
                 <p className="mt-3 text-sm text-gray-200 flex-1">{event.about}</p>
 
                 <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-                  <Badge tone={event.requiresPass ? 'purple' : 'green'}>
+                  <Badge tone={event.requiresPass ? 'purple' : 'green'} className={freePass && event.requiresPass ? 'line-through opacity-70' : ''}>
                     {event.requiresPass ? 'Pass required' : 'Free'}
                   </Badge>
+                  {freePass && event.requiresPass ? (
+                    <Badge tone="green">Free for you</Badge>
+                  ) : null}
                   <Badge tone={state?.registered ? 'green' : 'red'}>
                     {state?.registered ? 'Registered' : 'Not registered'}
                   </Badge>
@@ -218,7 +226,7 @@ export default function EventsPage() {
                     type="button"
                     disabled={state?.registered || state?.registering}
                     onClick={() => handleRegister(event.id)}
-                    className="inline-flex flex-1 items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white border border-blue-500 shadow-[0_0_14px_rgba(59,130,246,0.35)] transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex flex-1 items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black border border-cyan-300 shadow-[0_0_14px_rgba(0,245,255,0.35)] transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {state?.registered ? 'Registered' : state?.registering ? 'Registering...' : 'Register'}
                   </button>
@@ -230,16 +238,49 @@ export default function EventsPage() {
             );
           })}
         </section>
+
+        {paymentPrompt.open && paymentPrompt.eventId
+          ? createPortal(
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+                <div className="w-full max-w-sm rounded-lg border border-cyan-400/40 bg-black/90 p-5 shadow-[0_0_16px_rgba(0,245,255,0.3)]">
+                  <h3 className="text-lg font-semibold text-white mb-2">Payment required</h3>
+                  <p className="text-sm text-gray-300 mb-4">
+                    This event needs a completed payment before registering. Go to payment to finish, then come back to register.
+                  </p>
+                  <div className="flex gap-3 justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentPrompt({ open: false, eventId: null })}
+                      className="rounded-md border border-cyan-400/40 px-3 py-2 text-sm font-semibold text-cyan-200 hover:bg-white/5 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPaymentPrompt({ open: false, eventId: null });
+                        router.push('/payment');
+                      }}
+                      className="rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black shadow hover:bg-cyan-300 transition"
+                    >
+                      Go to payment
+                    </button>
+                  </div>
+                </div>
+              </div>,
+              typeof document !== 'undefined' ? document.body : ({} as HTMLElement)
+            )
+          : null}
       </div>
     </NeonShell>
   );
 }
 
-function Badge({ children, tone }: { children: React.ReactNode; tone: 'purple' | 'green' | 'red' }) {
+function Badge({ children, tone, className }: { children: React.ReactNode; tone: 'purple' | 'green' | 'red'; className?: string }) {
   const styles = {
     purple: 'bg-purple-500/20 text-purple-100 border border-purple-300/40',
     green: 'bg-green-500/20 text-green-100 border border-green-300/40',
     red: 'bg-red-500/20 text-red-100 border border-red-300/40',
   }[tone];
-  return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs ${styles}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs ${styles} ${className || ''}`}>{children}</span>;
 }

@@ -9,6 +9,7 @@ export const events = [
     href: "/events/creatorWS",
     requiresPass: false,
     registered: false,
+    prizePool: 0,
   },
   {
     id: "devWS",
@@ -20,6 +21,7 @@ export const events = [
     href: "/events/devWS",
     requiresPass: false,
     registered: false,
+    prizePool: 0,
   },
   {
     id: "modelerWS",
@@ -31,6 +33,7 @@ export const events = [
     href: "/events/modelerWS",
     requiresPass: false,
     registered: false,
+    prizePool: 0,
   },
   {
     id: "enigma",
@@ -42,6 +45,7 @@ export const events = [
     href: "/events/enigma",
     requiresPass: true,
     registered: false,
+    prizePool: 7500,
   },
   {
     id: "techQuiz",
@@ -51,8 +55,9 @@ export const events = [
     about: "A quiz on tech",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
     href: "/events/techQuiz",
-    requiresPass: true,
+    requiresPass: false,
     registered: false,
+    prizePool: 2250,
   },
   {
     id: "ooc",
@@ -64,6 +69,7 @@ export const events = [
     href: "/events/ooc",
     requiresPass: true,
     registered: false,
+    prizePool: 7500,
   },
   {
     id: "nearProtocol",
@@ -75,5 +81,6 @@ export const events = [
     href: "/events/nearProtocol",
     requiresPass: false,
     registered: false,
+    prizePool: 0,
   },
 ];

@@ -21,6 +21,7 @@ export default function PaymentPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(true);
+  const [freePass, setFreePass] = useState(false);
 
   const canSubmit = Boolean(order && utr.trim().length >= 6);
   const submitLabel = order?.utr ? 'Update UTR' : 'I have paid';
@@ -44,6 +45,19 @@ export default function PaymentPage() {
     setInitializing(true);
     setError(null);
     try {
+      const profileRes = await fetch('/api/auth/profile', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const profileData = await profileRes.json();
+      if (profileRes.ok && profileData?.user?.freePass) {
+        setFreePass(true);
+        setMessage('You have a free pass. No payment required.');
+        setOrder(null);
+        setInitializing(false);
+        setTimeout(() => router.push('/events'), 800);
+        return;
+      }
+
       const res = await fetch('/api/payment/create-order', {
         method: 'POST',
         headers: {
@@ -125,8 +139,13 @@ export default function PaymentPage() {
     <NeonShell headline="Complete your payment" subhead="Scan the QR, pay, then enter your UTR for manual verification.">
       <div className="mx-auto flex max-w-4xl flex-col gap-8">
         {initializing && <div className="text-sm text-gray-300">Preparing your payment order…</div>}
+        {freePass && (
+          <div className="rounded-md border border-green-400/40 bg-green-500/10 px-3 py-2 text-sm text-green-200">
+            You have a free pass. No payment is needed.
+          </div>
+        )}
 
-        {order && (
+        {!freePass && order && (
           <div className="text-sm text-gray-300 space-y-3 text-center">
             <span className="inline-flex items-center justify-center rounded border border-cyan-400/30 bg-white/5 px-4 py-1.5 text-base font-semibold text-cyan-100">
               Amount: ₹{order.amount.toFixed(2)}

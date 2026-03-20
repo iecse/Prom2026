@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
 const eventId = normalizedName; // ✅ now properly typed
 
-    const paymentNeeded = isPaymentRequired(eventId);
+    const paymentNeeded = isPaymentRequired(eventId) && !userOrResponse.freePass;
 
     if (paymentNeeded) {
       const paidOrder = await Order.findOne({ user: userOrResponse._id, status: 'paid' });

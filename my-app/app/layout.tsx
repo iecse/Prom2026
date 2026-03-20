@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/footer";
+import Navbar from "./components/navbar";
+import AnimatedParticles from "./landing/components/AnimatedParticles";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,8 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="">
-          {children}
+        <div className="fixed inset-0 -z-10 pointer-events-none">
+          <AnimatedParticles />
+        </div>
+        <div className="relative min-h-screen">
+          <Navbar />
+          <main className="pb-16">{children}</main>
           <Footer />
         </div>
       </body>

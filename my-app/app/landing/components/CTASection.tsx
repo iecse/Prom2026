@@ -157,7 +157,7 @@ export default function CTASection() {
         >
           <motion.a
             href="/auth/register"
-            className="px-10 py-4 rounded-md bg-blue-600 border border-blue-500 text-white font-bold text-lg uppercase tracking-widest shadow-[0_0_18px_rgba(59,130,246,0.35)] hover:bg-blue-500 transition-all duration-300 flex items-center justify-center"
+            className="px-11 py-4 rounded-md bg-gradient-to-r from-cyan-400 to-cyan-500 border border-cyan-300 text-black font-extrabold text-xl uppercase tracking-wider shadow-[0_0_18px_rgba(0,245,255,0.25)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_28px_rgba(0,245,255,0.35)] hover:-translate-y-0.5 flex items-center justify-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

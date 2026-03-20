@@ -1,4 +1,5 @@
 import React from 'react';
+import AnimatedParticles from '@/app/landing/components/AnimatedParticles';
 
 type Props = {
   headline?: string;
@@ -11,6 +12,7 @@ export default function NeonShell({ headline, subhead, children }: Props) {
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       {/* Background layers */}
       <div className="absolute inset-0 z-0 pointer-events-none">
+        <AnimatedParticles />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
         <div
           className="hero-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] bg-cyan-400/10 rounded-full blur-3xl opacity-30"

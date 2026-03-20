@@ -30,6 +30,10 @@ export interface IUser extends Document {
   email: string;
   phone: string;
   password: string;
+  memberId?: string;
+  freePass: boolean;
+  regNo: string;
+  branch: string;
   paymentStatus: PaymentStatus;
   transactionId?: string;
   paymentAmount: number;
@@ -55,6 +59,10 @@ const UserSchema = new Schema<IUser>(
     },
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 6, select: false },
+    memberId: { type: String, trim: true },
+    freePass: { type: Boolean, default: false },
+    regNo: { type: String, trim: true, required: true },
+    branch: { type: String, trim: true, required: true },
     paymentStatus: { type: String, enum: ['not_paid', 'pending', 'paid'], default: 'not_paid' },
     transactionId: { type: String, trim: true },
     paymentAmount: { type: Number, default: 0 },

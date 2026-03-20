@@ -1,16 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { events as eventData } from '@/app/events/components/events';
 
-interface Event {
-  id: number;
-  num: string;
-  title: string;
-  time: string;
-  description: string;
-  tags: string[];
-}
+type Event = (typeof eventData)[number] & { num: string };
 
 // Flip card component
 function FlipCard({ event, isLeft }: { event: Event; isLeft: boolean }) {
@@ -57,27 +52,32 @@ function FlipCard({ event, isLeft }: { event: Event; isLeft: boolean }) {
         {/* Back face */}
         <div className="flip-back bg-gradient-to-br from-magenta-500/10 to-cyan-400/5 border border-magenta-400/30 backdrop-blur-lg flex flex-col justify-between">
           <div className="overflow-y-auto flex-1">
-            <p className="text-sm text-gray-200 leading-relaxed mb-4">{event.description}</p>
+            <p className="text-sm text-gray-200 leading-relaxed mb-4">{event.about || event.description}</p>
             <div className="flex flex-wrap gap-2 mb-4">
-              {event.tags.map((tag, i) => (
+              <span
+                className={`text-xs font-mono px-2 py-1 rounded border ${
+                  isLeft ? 'border-magenta-500/50 text-magenta-300' : 'border-cyan-400/50 text-cyan-300'
+                }`}
+              >
+                {event.requiresPass ? 'Pass required' : 'Free'}
+              </span>
+              {event.prizePool > 0 ? (
                 <span
-                  key={i}
                   className={`text-xs font-mono px-2 py-1 rounded border ${
-                    isLeft
-                      ? 'border-magenta-500/50 text-magenta-300'
-                      : 'border-cyan-400/50 text-cyan-300'
+                    isLeft ? 'border-magenta-500/50 text-magenta-300' : 'border-cyan-400/50 text-cyan-300'
                   }`}
                 >
-                  {tag}
+                  Prize pool ₹{event.prizePool.toLocaleString()}
                 </span>
-              ))}
+              ) : null}
             </div>
           </div>
-          <button
-            className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-magenta-500 text-white text-sm font-bold rounded hover:from-cyan-400 hover:to-magenta-400 transition-all duration-300 transform hover:scale-105 w-full"
+          <Link
+            href={event.href || `/events/${event.id}`}
+            className="px-4 py-2 text-center bg-gradient-to-r from-cyan-500 to-magenta-500 text-white text-sm font-bold rounded hover:from-cyan-400 hover:to-magenta-400 transition-all duration-300 transform hover:scale-105 w-full"
           >
-            READ MORE
-          </button>
+            View details
+          </Link>
         </div>
       </div>
       <style jsx>{`
@@ -124,63 +124,6 @@ function FlipCard({ event, isLeft }: { event: Event; isLeft: boolean }) {
     </div>
   );
 }
-
-const EVENTS: Event[] = [
-  {
-    id: 1,
-    num: '01 // WORKSHOP',
-    title: 'Design Workshop',
-    time: '09:00 — DAY 1',
-    description:
-      'Kickstart the future with a high-energy launch ceremony featuring keynote addresses from industry pioneers and tech visionaries.',
-    tags: ['KEYNOTE', 'NETWORKING', 'LIVE DEMO'],
-  },
-  {
-    id: 2,
-    num: '02 // WORKSHOP',
-    title: 'Machine Learning Workshop',
-    time: '11:00 — DAY 1',
-    description:
-      'Dive deep into neural architectures and model training with hands-on sessions led by ML engineers from top research labs.',
-    tags: ['HANDS-ON', 'NEURAL NETS', 'PYTORCH'],
-  },
-  {
-    id: 3,
-    num: '03 // CHALLENGE',
-    title: 'Enigma',
-    time: '14:00 — DAY 1',
-    description:
-      'ML contest',
-    tags: ['COMPETITION', 'REACT', '3 HOURS'],
-  },
-  {
-    id: 4,
-    num: '04 // CHALLENGE',
-    title: 'Order of Chaos 2',
-    time: '10:00 — DAY 2',
-    description:
-      'OOC',
-    tags: ['COMPETITIVE', 'ALGORITHMS', 'LEADERBOARD'],
-  },
-  {
-    id: 5,
-    num: '05 // TALK',
-    title: 'Tech Quiz',
-    time: '14:30 — DAY 2',
-    description:
-      'Tech Quiz',
-    tags: ['PANEL', 'AGI', 'Q&A'],
-  },
-  {
-    id: 6,
-    num: '06 // FINALE',
-    title: 'Near Protocol Talk',
-    time: '18:00 — DAY 2',
-    description:
-      'Celebrate the best and brightest at the grand awards ceremony with prizes worth ₹2,00,000+.',
-    tags: ['AWARDS', 'PRIZES', 'NETWORKING'],
-  },
-];
 
 // Hook for detecting scroll and managing timeline visibility
 function useTimelineScroll() {
@@ -253,6 +196,10 @@ function useTimelineScroll() {
 
 export default function TimelineSection() {
   const { sectionRef, spineProgress, visibleEvents } = useTimelineScroll();
+  const EVENTS: Event[] = eventData.map((event, index) => ({
+    ...event,
+    num: `${String(index + 1).padStart(2, '0')} // EVENT`,
+  }));
 
   return (
     <section

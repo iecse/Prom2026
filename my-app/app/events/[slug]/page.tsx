@@ -41,6 +41,7 @@ export default async function EventPage({ params }: Props) {
 					<Badge tone={event.requiresPass ? "purple" : "green"}>
 						{event.requiresPass ? "Pass required" : "Free"}
 					</Badge>
+					{event.prizePool > 0 ? <Badge tone="green">Prize pool: ₹{event.prizePool.toLocaleString()}</Badge> : null}
 				</div>
 
 				<p className="text-base text-gray-200 leading-relaxed">{event.description}</p>

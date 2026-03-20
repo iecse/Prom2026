@@ -4,14 +4,18 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import NeonShell from '@/app/components/NeonShell';
+import branches from '@/data/branches.json';
 
 type FormState = {
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
+    regNo: string;
+    branch: string;
     password: string;
     passwordConfirm: string;
+    memberId: string;
 };
 
 export default function Register() {
@@ -21,12 +25,16 @@ export default function Register() {
         lastName: '',
         email: '',
         phone: '',
+        regNo: '',
+        branch: '',
         password: '',
         passwordConfirm: '',
+        memberId: '',
     });
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [formErrors, setFormErrors] = useState<string[]>([]);
 
     const updateField = (key: keyof FormState) =>
         (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -36,9 +44,22 @@ export default function Register() {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError(null);
+        setFormErrors([]);
 
-        if (form.password !== form.passwordConfirm) {
-            setError('Passwords do not match');
+        const validationErrors: string[] = [];
+
+        if (!form.firstName.trim()) validationErrors.push('First name is required');
+        if (!form.lastName.trim()) validationErrors.push('Last name is required');
+        if (!/.+@.+\.com$/i.test(form.email.trim())) validationErrors.push('Email must contain @ and end with .com');
+        if (!/^\d{10}$/.test(form.phone.trim())) validationErrors.push('Phone number must be 10 digits');
+        if (!/^\d{9}$/.test(form.regNo.trim())) validationErrors.push('Reg No must be 9 digits');
+        if (!form.branch) validationErrors.push('Branch is required');
+        if (!branches.includes(form.branch)) validationErrors.push('Select a valid branch');
+        if (!/^[A-Za-z0-9]{8,}$/.test(form.password)) validationErrors.push('Password must be at least 8 letters or digits');
+        if (form.password !== form.passwordConfirm) validationErrors.push('Passwords do not match');
+
+        if (validationErrors.length) {
+            setFormErrors(validationErrors);
             return;
         }
 
@@ -114,11 +135,48 @@ export default function Register() {
                         <input
                             type="tel"
                             required
+                            maxLength={10}
+                            inputMode="numeric"
+                            title="Enter 10 digits"
                             value={form.phone}
                             onChange={updateField('phone')}
                             className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
                             placeholder="9876543210"
                         />
+                    </label>
+
+                    <label className="flex flex-col gap-1 text-white">
+                        <span className="text-sm font-medium text-cyan-200">Reg No</span>
+                        <input
+                            type="text"
+                            required
+                            maxLength={9}
+                            inputMode="numeric"
+                            title="Enter 9 digits"
+                            value={form.regNo}
+                            onChange={updateField('regNo')}
+                            className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
+                            placeholder="9 digit reg no"
+                        />
+                    </label>
+
+                    <label className="flex flex-col gap-1 text-white">
+                        <span className="text-sm font-medium text-cyan-200">Branch</span>
+                        <select
+                            required
+                            value={form.branch}
+                            onChange={updateField('branch')}
+                            className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
+                        >
+                            <option value="" disabled>
+                                Select branch
+                            </option>
+                            {branches.map((b) => (
+                                <option key={b} value={b}>
+                                    {b}
+                                </option>
+                            ))}
+                        </select>
                     </label>
 
                     <label className="flex flex-col gap-1 text-white">
@@ -145,9 +203,26 @@ export default function Register() {
                         />
                     </label>
 
-                    {error && (
+                    <label className="flex flex-col gap-1 text-white md:col-span-2">
+                        <span className="text-sm font-medium text-cyan-200">Member ID (optional)</span>
+                        <input
+                            type="text"
+                            value={form.memberId}
+                            onChange={updateField('memberId')}
+                            className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
+                            placeholder="Enter member ID for free pass if you have one"
+                        />
+                        <span className="text-xs text-gray-400">One-time codes only; leave blank if you do not have a member ID.</span>
+                    </label>
+
+                    {(error || formErrors.length > 0) && (
                         <div className="md:col-span-2 rounded-md border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-                            {error}
+                            <ul className="list-disc pl-5 space-y-1">
+                                {formErrors.map((err) => (
+                                    <li key={err}>{err}</li>
+                                ))}
+                                {error ? <li>{error}</li> : null}
+                            </ul>
                         </div>
                     )}
 

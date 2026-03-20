@@ -158,7 +158,7 @@ export default function HeroSection() {
         {/* CTA Button */}
         <Link href="/auth/register" className="inline-block">
           <motion.button
-            className="mt-12 px-8 md:px-12 py-3 md:py-4 rounded-md bg-blue-600 text-white font-semibold text-lg uppercase tracking-widest border border-blue-500 shadow-[0_0_18px_rgba(59,130,246,0.35)] hover:bg-blue-500 transition-colors"
+            className="mt-12 px-9 md:px-14 py-3.5 md:py-4 rounded-md bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-extrabold text-xl uppercase tracking-wider border border-cyan-300 shadow-[0_0_18px_rgba(0,245,255,0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_28px_rgba(0,245,255,0.35)] hover:-translate-y-0.5"
             variants={buttonVariants}
             whileHover="whileHover"
             whileTap="whileTap"
