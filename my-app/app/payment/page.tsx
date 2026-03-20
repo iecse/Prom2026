@@ -10,6 +10,7 @@ type OrderPayload = {
   upiLink: string;
   qrDataUrl: string;
   status: 'pending' | 'paid' | 'rejected';
+  utr?: string;
 };
 
 export default function PaymentPage() {
@@ -22,6 +23,14 @@ export default function PaymentPage() {
   const [initializing, setInitializing] = useState(true);
 
   const canSubmit = Boolean(order && utr.trim().length >= 6);
+  const submitLabel = order?.utr ? 'Update UTR' : 'I have paid';
+
+  const paymentStateLabel = (() => {
+    if (!order) return 'Payment not done';
+    if (order.status === 'paid') return 'Payment done';
+    if (order.status === 'rejected') return 'Payment not done';
+    return 'Payment pending';
+  })();
 
   const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
@@ -48,8 +57,11 @@ export default function PaymentPage() {
         setError(data?.message || 'Could not create payment order');
       } else {
         setOrder(data);
+        if (data.utr) {
+          setUtr(data.utr);
+        }
       }
-    } catch (err) {
+    } catch {
       setError('Could not reach payment service');
     } finally {
       setInitializing(false);
@@ -100,9 +112,10 @@ export default function PaymentPage() {
         return;
       }
 
-      setMessage('UTR submitted. Await manual verification.');
+      setMessage('UTR submitted. Redirecting to your profile...');
       setLoading(false);
-    } catch (err) {
+      setTimeout(() => router.push('/auth/profile'), 600);
+    } catch {
       setError('Something went wrong. Please try again.');
       setLoading(false);
     }
@@ -114,13 +127,12 @@ export default function PaymentPage() {
         {initializing && <div className="text-sm text-gray-300">Preparing your payment order…</div>}
 
         {order && (
-          <div className="text-sm text-gray-300 space-y-1">
-            <div className="flex flex-wrap gap-3 text-cyan-200">
-              <span className="rounded border border-cyan-400/30 bg-white/5 px-3 py-1">Order: {order.orderId}</span>
-              <span className="rounded border border-cyan-400/30 bg-white/5 px-3 py-1">Amount: ₹{order.amount.toFixed(2)}</span>
-            </div>
-            <p>
-              UPI link: <a href={order.upiLink} className="text-cyan-300 underline" target="_blank" rel="noreferrer">{order.upiLink}</a>
+          <div className="text-sm text-gray-300 space-y-3 text-center">
+            <span className="inline-flex items-center justify-center rounded border border-cyan-400/30 bg-white/5 px-4 py-1.5 text-base font-semibold text-cyan-100">
+              Amount: ₹{order.amount.toFixed(2)}
+            </span>
+            <p className="text-cyan-200">
+              Pay using the QR code below or open your UPI app directly.
             </p>
           </div>
         )}
@@ -140,14 +152,21 @@ export default function PaymentPage() {
             <p className="mt-3 text-xs text-gray-400 text-center">
               Use your UPI app to pay. Keep the transaction/UTR ID for verification.
             </p>
-            <button
-              type="button"
-              onClick={loadOrder}
-              disabled={initializing}
-              className="mt-3 inline-flex items-center justify-center rounded-md border border-cyan-400/40 px-3 py-2 text-sm font-semibold text-cyan-200 hover:bg-white/5 transition-colors disabled:opacity-60"
-            >
-              Refresh order
-            </button>
+            <div className="mt-3 flex flex-col items-center gap-2">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-gray-500">OR</span>
+              {order?.upiLink ? (
+                <a
+                  href={order.upiLink}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black shadow hover:bg-cyan-300 transition"
+                >
+                  Open UPI app
+                </a>
+              ) : (
+                <span className="text-xs text-gray-500">UPI link unavailable</span>
+              )}
+            </div>
           </div>
 
           <form onSubmit={submitPayment} className="rounded-lg border border-cyan-400/20 bg-white/5 p-5 shadow-[0_0_12px_rgba(0,245,255,0.15)] flex flex-col gap-4">
@@ -178,9 +197,9 @@ export default function PaymentPage() {
               <button
                 type="submit"
                 disabled={loading || !canSubmit}
-                className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-cyan-400 to-magenta-500 px-4 py-2 text-black font-semibold shadow-[0_0_14px_rgba(0,245,255,0.4)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-black font-semibold hover:bg-cyan-300 transition disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? 'Submitting…' : 'I have paid'}
+                {loading ? 'Submitting…' : submitLabel}
               </button>
               <button
                 type="button"

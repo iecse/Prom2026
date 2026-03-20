@@ -39,24 +39,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Reuse any existing pending order for this user to avoid duplicate UTR submissions
-    const existing = await Order.findOne({ user: userOrResponse._id, status: 'pending' });
-    if (existing) {
-      // If the configured amount changed, update the pending order to match the latest amount
-      if (existing.amount !== amount) {
-        existing.amount = amount;
-        await existing.save();
+    // Always look at the latest order for this user
+    const latest = await Order.findOne({ user: userOrResponse._id }).sort({ createdAt: -1 });
+
+    if (latest) {
+      if (latest.status === 'pending') {
+        if (latest.amount !== amount) {
+          latest.amount = amount;
+          await latest.save();
+        }
+
+        const upiLink = buildUpiLink(latest.orderId);
+        const qrDataUrl = await QRCode.toDataURL(upiLink);
+        return NextResponse.json({
+          orderId: latest.orderId,
+          amount: latest.amount,
+          upiLink,
+          qrDataUrl,
+          status: latest.status,
+          utr: latest.utr,
+        });
       }
 
-      const upiLink = buildUpiLink(existing.orderId);
-      const qrDataUrl = await QRCode.toDataURL(upiLink);
-      return NextResponse.json({
-        orderId: existing.orderId,
-        amount: existing.amount,
-        upiLink,
-        qrDataUrl,
-        status: existing.status,
-      });
+      if (latest.status === 'paid') {
+        const upiLink = buildUpiLink(latest.orderId);
+        const qrDataUrl = await QRCode.toDataURL(upiLink);
+        return NextResponse.json({
+          orderId: latest.orderId,
+          amount: latest.amount,
+          upiLink,
+          qrDataUrl,
+          status: latest.status,
+          utr: latest.utr,
+        });
+      }
+      // If rejected, fall through to create a fresh pending order
     }
 
     const orderId = crypto.randomUUID();
@@ -70,7 +87,7 @@ export async function POST(req: NextRequest) {
       user: userOrResponse._id,
     });
 
-    return NextResponse.json({ orderId, amount, upiLink, qrDataUrl, status: 'pending' });
+    return NextResponse.json({ orderId, amount, upiLink, qrDataUrl, status: 'pending', utr: null });
   } catch (error) {
     return NextResponse.json({ message: 'Could not create order', error: (error as Error).message }, { status: 500 });
   }

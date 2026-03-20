@@ -41,7 +41,7 @@ export default function AdminOrdersPage() {
       } else {
         setOrders(data.orders || []);
       }
-    } catch (err) {
+    } catch {
       setError('Failed to load orders');
     } finally {
       setLoading(false);
@@ -66,7 +66,7 @@ export default function AdminOrdersPage() {
       } else {
         setOrders((prev) => prev.filter((o) => o.orderId !== orderId));
       }
-    } catch (err) {
+    } catch {
       setError('Could not update order');
     } finally {
       setLoading(false);

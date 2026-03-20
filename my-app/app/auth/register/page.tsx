@@ -63,7 +63,7 @@ export default function Register() {
             }
 
             router.push('/auth/login');
-        } catch (err) {
+        } catch {
             setError('Something went wrong. Please try again.');
             setSubmitting(false);
         }

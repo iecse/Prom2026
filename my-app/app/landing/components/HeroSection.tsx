@@ -25,17 +25,16 @@ const itemVariants = {
 };
 
 const buttonVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
+  hidden: { opacity: 0, scale: 0.95 },
   visible: {
     opacity: 1,
     scale: 1,
     transition: { duration: 0.8 },
   },
   whileHover: {
-    scale: 1.05,
-    boxShadow: '0 0 30px rgba(0, 245, 255, 1), 0 0 60px rgba(0, 245, 255, 0.4)',
+    scale: 1.02,
   },
-  whileTap: { scale: 0.95 },
+  whileTap: { scale: 0.97 },
 };
 
 export default function HeroSection() {
@@ -159,17 +158,12 @@ export default function HeroSection() {
         {/* CTA Button */}
         <Link href="/auth/register" className="inline-block">
           <motion.button
-            className="mt-12 px-8 md:px-12 py-3 md:py-4 bg-cyan-400 text-black font-bold text-lg uppercase tracking-widest rounded-sm hover:bg-white transition-colors relative overflow-hidden group"
+            className="mt-12 px-8 md:px-12 py-3 md:py-4 rounded-md bg-blue-600 text-white font-semibold text-lg uppercase tracking-widest border border-blue-500 shadow-[0_0_18px_rgba(59,130,246,0.35)] hover:bg-blue-500 transition-colors"
             variants={buttonVariants}
             whileHover="whileHover"
             whileTap="whileTap"
           >
-            <span className="relative z-10">⚡ Register Now</span>
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-magenta-500 opacity-0"
-              initial={{ opacity: 0 }}
-              whileHover={{ opacity: 0 }}
-            />
+            ⚡ Register Now
           </motion.button>
         </Link>
       </motion.div>

@@ -1,7 +1,19 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
+
+type Particle = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  r: number;
+  cyan: boolean;
+  alpha: number;
+  reset: () => void;
+  update: () => void;
+  draw: (ctx: CanvasRenderingContext2D) => void;
+};
 
 export default function AnimatedParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -15,54 +27,52 @@ export default function AnimatedParticles() {
 
     let W = (canvas.width = canvas.offsetWidth);
     let H = (canvas.height = canvas.offsetHeight);
-    let particles: any[] = [];
+    let particles: Particle[] = [];
 
-    class Particle {
-      x = 0;
-      y = 0;
-      vx = 0;
-      vy = 0;
-      r = 1;
-      cyan = false;
-      alpha = 0.5;
+    const createParticle = (): Particle => {
+      const particle: Particle = {
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        r: 1,
+        cyan: false,
+        alpha: 0.5,
+        reset() {
+          this.x = Math.random() * W;
+          this.y = Math.random() * H;
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.vy = (Math.random() - 0.5) * 0.3;
+          this.r = Math.random() * 2 + 1;
+          this.cyan = Math.random() > 0.6;
+          this.alpha = Math.random() * 0.8 + 0.4;
+        },
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) {
+            this.reset();
+          }
+        },
+        draw(drawCtx: CanvasRenderingContext2D) {
+          drawCtx.beginPath();
+          drawCtx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+          drawCtx.fillStyle = this.cyan
+            ? `rgba(0, 245, 255, ${this.alpha})`
+            : `rgba(255, 0, 255, ${this.alpha * 0.6})`;
+          drawCtx.fill();
+        },
+      };
 
-      constructor() {
-        this.reset();
-      }
-
-      reset() {
-        this.x = Math.random() * W;
-        this.y = Math.random() * H;
-        this.vx = (Math.random() - 0.5) * 0.3;
-        this.vy = (Math.random() - 0.5) * 0.3;
-        this.r = Math.random() * 2 + 1;
-        this.cyan = Math.random() > 0.6;
-        this.alpha = Math.random() * 0.8 + 0.4;
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) {
-          this.reset();
-        }
-      }
-
-      draw(ctx: CanvasRenderingContext2D) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.fillStyle = this.cyan
-          ? `rgba(0, 245, 255, ${this.alpha})`
-          : `rgba(255, 0, 255, ${this.alpha * 0.6})`;
-        ctx.fill();
-      }
-    }
+      particle.reset();
+      return particle;
+    };
 
     const initParticles = () => {
       particles = [];
       const particleCount = W < 768 ? 80 : 600;
       for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
+        particles.push(createParticle());
       }
     };
 

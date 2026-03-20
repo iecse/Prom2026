@@ -15,6 +15,7 @@ interface ProfileResponse {
     paymentStatus?: string;
     transactionId?: string;
   };
+
 }
 
 export default function ProfilePage() {
@@ -50,7 +51,7 @@ export default function ProfilePage() {
         } else {
           setProfile(data.user);
         }
-      } catch (err) {
+      } catch {
         setError('Failed to load profile.');
       } finally {
         setLoading(false);
@@ -106,7 +107,7 @@ export default function ProfilePage() {
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <InfoCard label="Phone" value={profile.phone || '—'} />
-        <InfoCard label="Payment Status" value={profile.paymentStatus || 'pending'} />
+        <InfoCard label="Payment Status" value={formatPaymentStatus(profile.paymentStatus)} />
         <InfoCard label="Transaction ID" value={profile.transactionId || '—'} />
       </section>
 
@@ -135,4 +136,11 @@ function InfoCard({ label, value }: { label: string; value: string }) {
       <p className="text-lg font-semibold text-white">{value}</p>
     </div>
   );
+}
+
+function formatPaymentStatus(status?: string) {
+  if (!status || status === 'not_paid' || status === 'failed' || status === 'rejected') return 'Payment not done';
+  if (status === 'pending') return 'Payment pending';
+  if (status === 'paid' || status === 'completed') return 'Payment done';
+  return status;
 }

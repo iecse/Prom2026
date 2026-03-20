@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireUser } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
-import { AVAILABLE_EVENTS, isPaymentRequired } from '@/lib/events';
+import { AVAILABLE_EVENTS, isPaymentRequired, type AvailableEvent } from '@/lib/events';
 import Order from '@/lib/models/order';
+
+function isValidEvent(event: string): event is AvailableEvent {
+  return AVAILABLE_EVENTS.includes(event as AvailableEvent);
+}
 
 export async function POST(req: NextRequest) {
   await connectDB();
@@ -11,24 +15,28 @@ export async function POST(req: NextRequest) {
 
   try {
     const { eventName } = await req.json();
+    const normalizedName = typeof eventName === 'string' ? eventName.trim() : '';
 
-    if (!eventName) {
+    if (!normalizedName) {
       return NextResponse.json({ message: 'Event name is required' }, { status: 400 });
     }
 
-    if (!AVAILABLE_EVENTS.includes(eventName)) {
-      return NextResponse.json(
-        { message: `Invalid event. Available events: ${AVAILABLE_EVENTS.join(', ')}` },
-        { status: 400 }
-      );
-    }
+    if (!isValidEvent(normalizedName)) {
+  return NextResponse.json(
+    { message: `Invalid event. Available events: ${AVAILABLE_EVENTS.join(', ')}` },
+    { status: 400 }
+  );
+}
 
-    const paymentNeeded = isPaymentRequired(eventName);
+const eventId = normalizedName; // ✅ now properly typed
+
+    const paymentNeeded = isPaymentRequired(eventId);
 
     if (paymentNeeded) {
       const paidOrder = await Order.findOne({ user: userOrResponse._id, status: 'paid' });
+      const userPaid = userOrResponse.paymentStatus === 'paid';
 
-      if (!paidOrder && userOrResponse.paymentStatus !== 'completed') {
+      if (!paidOrder && !userPaid) {
         return NextResponse.json(
           { message: 'Payment must be completed before registering for this event' },
           { status: 400 }
@@ -36,7 +44,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    userOrResponse.registerForEvent(eventName);
+    userOrResponse.registerForEvent(eventId);
     await userOrResponse.save();
 
     return NextResponse.json({
@@ -44,14 +52,12 @@ export async function POST(req: NextRequest) {
       registeredEvents: userOrResponse.registeredEvents,
     });
   } catch (error) {
-    const message = (error as Error).message;
+    const message = (error as Error)?.message || 'Event registration error';
+    console.error('[register event] failed', message, error);
     if (message.includes('Already registered')) {
       return NextResponse.json({ message }, { status: 409 });
     }
 
-    return NextResponse.json(
-      { message: 'Event registration error', error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message, error: message }, { status: 500 });
   }
 }

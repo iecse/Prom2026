@@ -36,7 +36,7 @@ export default function Login() {
             }
 
             router.push('/auth/profile');
-        } catch (err) {
+        } catch {
             setError('Something went wrong. Please try again.');
             setLoading(false);
         }

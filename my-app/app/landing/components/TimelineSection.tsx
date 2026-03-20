@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import gsap from 'gsap';
 
 interface Event {
   id: number;
@@ -14,7 +13,7 @@ interface Event {
 }
 
 // Flip card component
-function FlipCard({ event, isLeft, index }: { event: Event; isLeft: boolean; index: number }) {
+function FlipCard({ event, isLeft }: { event: Event; isLeft: boolean }) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -184,7 +183,7 @@ const EVENTS: Event[] = [
 ];
 
 // Hook for detecting scroll and managing timeline visibility
-function useTimelineScroll(eventCount: number) {
+function useTimelineScroll() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [spineProgress, setSpineProgress] = useState(0);
   const [visibleEvents, setVisibleEvents] = useState<number[]>([]);
@@ -253,7 +252,7 @@ function useTimelineScroll(eventCount: number) {
 }
 
 export default function TimelineSection() {
-  const { sectionRef, spineProgress, visibleEvents } = useTimelineScroll(EVENTS.length);
+  const { sectionRef, spineProgress, visibleEvents } = useTimelineScroll();
 
   return (
     <section
@@ -329,7 +328,7 @@ export default function TimelineSection() {
                     <div
                       className={`flex ${isLeft ? 'md:justify-end' : 'md:justify-start'}`}
                     >
-                      <FlipCard event={event} isLeft={isLeft} index={index} />
+                      <FlipCard event={event} isLeft={isLeft} />
                     </div>
                   </div>
                 </div>

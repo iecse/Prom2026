@@ -1,8 +1,22 @@
 import bcrypt from 'bcryptjs';
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
-export type EventName = 'Enigma' | 'Order of Chaos' | 'Tech Quiz';
-export type PaymentStatus = 'pending' | 'completed' | 'failed';
+export const EVENT_NAMES = [
+  'creatorWS',
+  'devWS',
+  'modelerWS',
+  'enigma',
+  'techQuiz',
+  'ooc',
+  'nearProtocol',
+  // Legacy spellings kept for compatibility
+  'Enigma',
+  'Order of Chaos',
+  'Tech Quiz',
+] as const;
+
+export type EventName = (typeof EVENT_NAMES)[number];
+export type PaymentStatus = 'not_paid' | 'pending' | 'paid';
 
 export interface RegisteredEvent {
   eventName: EventName;
@@ -41,13 +55,13 @@ const UserSchema = new Schema<IUser>(
     },
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 6, select: false },
-    paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+    paymentStatus: { type: String, enum: ['not_paid', 'pending', 'paid'], default: 'not_paid' },
     transactionId: { type: String, trim: true },
     paymentAmount: { type: Number, default: 0 },
     paymentDate: { type: Date },
     registeredEvents: [
       {
-        eventName: { type: String, enum: ['Enigma', 'Order of Chaos', 'Tech Quiz'] },
+        eventName: { type: String, trim: true },
         registrationDate: { type: Date, default: Date.now },
         status: { type: String, enum: ['registered', 'participated', 'completed'], default: 'registered' },
       },
@@ -70,13 +84,18 @@ UserSchema.methods.comparePassword = async function comparePassword(enteredPassw
 };
 
 UserSchema.methods.registerForEvent = function registerForEvent(eventName: EventName) {
-  const alreadyRegistered = this.registeredEvents.some((event: RegisteredEvent) => event.eventName === eventName);
+  const normalized = eventName.trim();
+
+  const alreadyRegistered = this.registeredEvents.some((event: RegisteredEvent) => {
+    if (!event.eventName) return false;
+    return event.eventName.toLowerCase() === normalized.toLowerCase();
+  });
   if (alreadyRegistered) {
-    throw new Error(`Already registered for ${eventName}`);
+    throw new Error(`Already registered for ${normalized}`);
   }
 
   this.registeredEvents.push({
-    eventName,
+    eventName: normalized,
     registrationDate: new Date(),
     status: 'registered',
   });

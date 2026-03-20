@@ -34,12 +34,15 @@ export async function POST(req: NextRequest) {
     const user = await User.findById(order.user);
     if (user) {
       if (status === 'paid') {
-        user.paymentStatus = 'completed';
+        user.paymentStatus = 'paid';
         user.transactionId = order.utr;
         user.paymentAmount = order.amount;
         user.paymentDate = new Date();
       } else if (status === 'rejected') {
-        user.paymentStatus = 'failed';
+        user.paymentStatus = 'not_paid';
+        user.transactionId = undefined;
+        user.paymentAmount = 0;
+        user.paymentDate = undefined;
       }
       await user.save();
     }

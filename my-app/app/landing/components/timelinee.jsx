@@ -383,8 +383,6 @@ function useTimelineScroll(eventCount) {
 
     const scrollY = window.scrollY;
     const windowH = window.innerHeight;
-    const docH = document.documentElement.scrollHeight;
-
     // Detect scroll direction
     const goingUp = scrollY < prevScrollY.current;
     prevScrollY.current = scrollY;
@@ -432,18 +430,14 @@ function useTimelineScroll(eventCount) {
 
   // Reset when user scrolls all the way back to top
   useEffect(() => {
-    let resetPending = false;
     const onScroll = () => {
       const scrollY = window.scrollY;
-      const windowH = window.innerHeight;
 
       if (scrollY < 80) {
         // Fully at top: clear events so they animate fresh on next scroll down
         setVisibleEvents([]);
         setSpineProgress(0);
-        resetPending = true;
       } else {
-        resetPending = false;
         checkEvents();
       }
     };

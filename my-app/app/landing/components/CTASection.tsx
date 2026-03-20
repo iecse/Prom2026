@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+const CTA_STATS = [
+  { num: 500, label: 'PARTICIPANTS', color: 'cyan' },
+  { num: 72, label: 'HOURS OF INNOVATION', suffix: 'H', color: 'magenta' },
+  { num: 30000, label: 'IN PRIZES', prefix: '₹', color: 'cyan' },
+  { num: 4, label: 'TECH Domains', suffix: '', color: 'magenta' },
+];
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,12 +19,29 @@ export default function CTASection() {
   const countersRef = useRef<(HTMLDivElement | null)[]>([]);
   const [hasAnimated, setHasAnimated] = useState(false);
 
-  const stats = [
-    { num: 500, label: 'PARTICIPANTS', color: 'cyan' },
-    { num: 72, label: 'HOURS OF INNOVATION', suffix: 'H', color: 'magenta' },
-    { num: 30000, label: 'IN PRIZES', prefix: '₹', color: 'cyan' },
-    { num: 4, label: 'TECH Domains', suffix: '', color: 'magenta' },
-  ];
+  const animateCounters = useCallback(() => {
+    CTA_STATS.forEach((stat, index) => {
+      const el = countersRef.current[index];
+      if (!el) return;
+
+      const numElement = el.querySelector('.stat-num') as HTMLElement | null;
+      if (!numElement) return;
+
+      const targets = { value: 0 };
+
+      gsap.to(targets, {
+        value: stat.num,
+        duration: 2,
+        ease: 'power2.out',
+        delay: index * 0.15,
+        onUpdate: function () {
+          const prefix = stat.prefix || '';
+          const suffix = stat.suffix || '';
+          numElement.textContent = `${prefix}${Math.round(targets.value).toLocaleString()}${suffix}`;
+        },
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -70,31 +94,7 @@ export default function CTASection() {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [hasAnimated]);
-
-  const animateCounters = () => {
-    countersRef.current.forEach((el, index) => {
-      if (!el) return;
-
-      const numElement = el.querySelector('.stat-num') as HTMLElement;
-      if (!numElement) return;
-
-      const stat = stats[index];
-      const targets = { value: 0 };
-
-      gsap.to(targets, {
-        value: stat.num,
-        duration: 2,
-        ease: 'power2.out',
-        delay: index * 0.15,
-        onUpdate: function () {
-          const prefix = stat.prefix || '';
-          const suffix = stat.suffix || '';
-          numElement.textContent = `${prefix}${Math.round(targets.value).toLocaleString()}${suffix}`;
-        },
-      });
-    });
-  };
+  }, [animateCounters, hasAnimated]);
 
   return (
     <section
@@ -133,7 +133,7 @@ export default function CTASection() {
         >
           <div className="flex justify-center mb-4">
             <span className="text-sm font-mono text-magenta-500 tracking-widest uppercase">
-              // JOIN THE REVOLUTION
+              JOIN THE REVOLUTION
             </span>
           </div>
           <h2 className="cta-title text-5xl md:text-6xl font-black text-white tracking-tight mb-6">
@@ -143,7 +143,7 @@ export default function CTASection() {
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
             Prometheus is where bold ideas are forged into reality. Two days. Unlimited ambition.
-            One chance to prove what you're made of.
+            One chance to prove what you&apos;re made of.
           </p>
         </motion.div>
 
@@ -156,19 +156,12 @@ export default function CTASection() {
           viewport={{ once: true }}
         >
           <motion.a
-            href="/register"
-            className="px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-bold text-lg uppercase tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 relative overflow-hidden group flex items-center justify-center"
+            href="/auth/register"
+            className="px-10 py-4 rounded-md bg-blue-600 border border-blue-500 text-white font-bold text-lg uppercase tracking-widest shadow-[0_0_18px_rgba(59,130,246,0.35)] hover:bg-blue-500 transition-all duration-300 flex items-center justify-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <motion.span
-              className="absolute inset-0 bg-cyan-400 -z-10"
-              initial={{ scaleX: 0 }}
-              whileHover={{ scaleX: 1 }}
-              transition={{ duration: 0.4 }}
-              style={{ originX: 0 }}
-            />
-            <span className="relative z-10 text-center">⚡ Register for Prometheus</span>
+            <span className="text-center">⚡ Register for Prometheus</span>
           </motion.a>
         </motion.div>
 
@@ -180,7 +173,7 @@ export default function CTASection() {
           transition={{ duration: 0.8, staggerChildren: 0.1 }}
           viewport={{ once: true }}
         >
-          {stats.map((stat, index) => (
+          {CTA_STATS.map((stat, index) => (
             <motion.div
               key={index}
               ref={(el) => {

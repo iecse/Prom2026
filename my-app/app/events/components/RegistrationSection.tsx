@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 function Badge({ children, tone }: { children: React.ReactNode; tone: "purple" | "green" | "red" }) {
   const styles = {
@@ -20,7 +21,41 @@ export function RegistrationSection({
   requiresPass?: boolean;
   defaultRegistered?: boolean;
 }) {
-  const [registered, setRegistered] = useState(defaultRegistered);
+  const router = useRouter();
+  const [state, setState] = useState<{ registered: boolean; loading: boolean; error: string | null }>(
+    { registered: defaultRegistered, loading: false, error: null }
+  );
+
+  const handleRegister = async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      router.push("/auth/login");
+      return;
+    }
+
+    setState((prev) => ({ ...prev, loading: true, error: null }));
+
+    try {
+      const res = await fetch("/api/events/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ eventName: eventId }),
+      });
+
+      const data = (await res.json()) as { message?: string };
+      if (!res.ok) {
+        setState((prev) => ({ registered: prev.registered, loading: false, error: data?.message || "Registration failed" }));
+        return;
+      }
+
+      setState({ registered: true, loading: false, error: null });
+    } catch {
+      setState((prev) => ({ registered: prev.registered, loading: false, error: "Something went wrong" }));
+    }
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -28,21 +63,27 @@ export function RegistrationSection({
         <Badge tone={requiresPass ? "purple" : "green"}>
           {requiresPass ? "Pass required" : "Free"}
         </Badge>
-        <Badge tone={registered ? "purple" : "red"}>
-          {registered ? "Registered" : "Not registered"}
+        <Badge tone={state.registered ? "purple" : "red"}>
+          {state.registered ? "Registered" : "Not registered"}
         </Badge>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={() => setRegistered(true)}
-          disabled={registered}
-          className="inline-flex items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 disabled:cursor-not-allowed disabled:bg-purple-400"
+          onClick={handleRegister}
+          disabled={state.registered || state.loading}
+          className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white border border-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.3)] transition hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {registered ? "Registered" : "Register"}
+          {state.registered ? "Registered" : state.loading ? "Registering..." : "Register"}
         </button>
       </div>
+
+      {state.error ? (
+        <div className="rounded-md border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+          {state.error}
+        </div>
+      ) : null}
     </div>
   );
 }

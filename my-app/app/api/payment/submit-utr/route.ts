@@ -26,38 +26,71 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Order not found' }, { status: 404 });
     }
 
-    if (order.status !== 'pending') {
-      return NextResponse.json({ message: `Order already ${order.status}` }, { status: 400 });
-    }
-
-    if (order.utr) {
-      return NextResponse.json({ message: 'UTR already submitted for this order' }, { status: 400 });
-    }
-
     const trimmedUtr = utr.trim();
     const duplicate = await Order.findOne({ utr: trimmedUtr });
     if (duplicate && duplicate.orderId !== order.orderId) {
       return NextResponse.json({ message: 'This UTR is already linked to another order' }, { status: 409 });
     }
 
-    order.utr = trimmedUtr;
-    order.status = 'pending';
-    await order.save();
+    // Allow idempotent submit when already paid with same UTR
+    if (order.status === 'paid' && order.utr === trimmedUtr) {
+      return NextResponse.json({
+        message: 'Payment already marked as paid.',
+        order: {
+          orderId: order.orderId,
+          status: order.status,
+          utr: order.utr,
+          amount: order.amount,
+          createdAt: order.createdAt,
+          userPaymentStatus: userOrResponse.paymentStatus,
+        },
+      });
+    }
 
-    // Reflect pending status on the user profile for compatibility with event gating
-    userOrResponse.paymentStatus = 'pending';
+    // Auto-complete payment: attach UTR and mark order paid
+    try {
+      await Order.updateOne(
+        { _id: order._id },
+        {
+          $set: {
+            utr: trimmedUtr,
+            status: 'paid',
+          },
+        }
+      );
+      order.utr = trimmedUtr;
+      order.status = 'paid';
+    } catch (err) {
+      const message = (err as Error).message || '';
+      if (message.includes('duplicate key') || message.includes('E11000')) {
+        return NextResponse.json({ message: 'This UTR is already linked to another order' }, { status: 409 });
+      }
+      throw err;
+    }
+
+    // Reflect paid status on the user profile for event gating
+    await userOrResponse.updateOne({
+      $set: {
+        paymentStatus: 'paid',
+        transactionId: trimmedUtr,
+        paymentAmount: order.amount,
+        paymentDate: new Date(),
+      },
+    });
+    userOrResponse.paymentStatus = 'paid';
     userOrResponse.transactionId = trimmedUtr;
     userOrResponse.paymentAmount = order.amount;
-    await userOrResponse.save();
+    userOrResponse.paymentDate = new Date();
 
     return NextResponse.json({
-      message: 'UTR submitted. Awaiting manual verification.',
+      message: 'Payment marked as paid.',
       order: {
         orderId: order.orderId,
         status: order.status,
         utr: order.utr,
         amount: order.amount,
         createdAt: order.createdAt,
+        userPaymentStatus: userOrResponse.paymentStatus,
       },
     });
   } catch (error) {
