@@ -13,11 +13,12 @@ function ensureEnv(name: string): string {
   return value;
 }
 
-function buildUpiLink(orderId: string): string {
+function buildUpiLink(orderId: string, amount: number): string {
   const upiId = encodeURIComponent(ensureEnv('UPI_ID'));
   const payeeName = encodeURIComponent(ensureEnv('UPI_NAME'));
   const tr = encodeURIComponent(orderId);
-  return `upi://pay?pa=${upiId}&pn=${payeeName}&cu=INR&tr=${tr}`;
+  const am = encodeURIComponent(amount.toFixed(2));
+  return `upi://pay?pa=${upiId}&pn=${payeeName}&cu=INR&tr=${tr}&am=${am}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
           await latest.save();
         }
 
-        const upiLink = buildUpiLink(latest.orderId);
+        const upiLink = buildUpiLink(latest.orderId, amount);
         const qrDataUrl = await QRCode.toDataURL(upiLink);
         return NextResponse.json({
           orderId: latest.orderId,
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (latest.status === 'paid') {
-        const upiLink = buildUpiLink(latest.orderId);
+        const upiLink = buildUpiLink(latest.orderId, latest.amount);
         const qrDataUrl = await QRCode.toDataURL(upiLink);
         return NextResponse.json({
           orderId: latest.orderId,
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
     }
 
     const orderId = crypto.randomUUID();
-    const upiLink = buildUpiLink(orderId);
+    const upiLink = buildUpiLink(orderId, amount);
     const qrDataUrl = await QRCode.toDataURL(upiLink);
 
     await Order.create({
