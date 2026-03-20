@@ -47,6 +47,7 @@ export default function EventsPage() {
   const [status, setStatus] = useState<Record<string, EventState>>({});
   const [statusLoading, setStatusLoading] = useState(true);
   const [freePass, setFreePass] = useState(false);
+  const [hasPaid, setHasPaid] = useState(false);
   const [paymentPrompt, setPaymentPrompt] = useState<{ open: boolean; eventId: string | null }>({ open: false, eventId: null });
 
   const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
@@ -64,6 +65,7 @@ export default function EventsPage() {
 
         const registeredEvents = (data?.user?.registeredEvents as Array<{ eventName?: string }> | undefined) || [];
         setFreePass(Boolean(data?.user?.freePass));
+        setHasPaid(data?.user?.paymentStatus === 'paid');
         const initial: Record<string, EventState> = {};
 
         events.forEach((ev) => {
@@ -93,6 +95,7 @@ export default function EventsPage() {
       });
       setStatus(initial);
       setStatusLoading(false);
+      setHasPaid(false);
       return;
     }
 
@@ -107,7 +110,7 @@ export default function EventsPage() {
       return;
     }
 
-    if (event?.requiresPass && !freePass) {
+    if (event?.requiresPass && !freePass && !hasPaid) {
       setPaymentPrompt({ open: true, eventId });
       return;
     }
