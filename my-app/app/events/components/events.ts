@@ -85,7 +85,7 @@ export const events = [
   },
   {
     id: "nearProtocol",
-    title: "NEAR Protocol",
+    title: "OpenClaw by NEAR Protocol",
     date: "4th April 2026",
     time: "5PM-8PM",
     about: "Talk + networking session by ArQ and one of the founder of NEAR Protocol on the NEAR Protocol cryptocurrency, followed by food.",
