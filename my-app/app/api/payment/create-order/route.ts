@@ -5,6 +5,7 @@ import { requireUser } from '@/lib/auth';
 import Order from '@/lib/models/order';
 
 const STATIC_QR_PATH = '/upi-qr.png';
+const FIXED_UPI_AMOUNT = 100;
 
 function ensureEnv(name: string): string {
   const value = process.env[name];
@@ -30,9 +31,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
 
-    const envAmountRaw = process.env.UPI_AMOUNT;
-    const envAmount = envAmountRaw ? Number(envAmountRaw) : NaN;
-    const amount = body.amount !== undefined ? Number(body.amount) : envAmount;
+    // Keep amount deterministic to avoid stale env/runtime mismatch.
+    const amount = FIXED_UPI_AMOUNT;
 
     if (!amount || Number.isNaN(amount) || amount <= 0) {
       return NextResponse.json(
@@ -45,7 +45,8 @@ export async function POST(req: NextRequest) {
     const latest = await Order.findOne({ user: userOrResponse._id }).sort({ createdAt: -1 });
 
     if (latest) {
-      if (latest.status === 'pending') {
+      // Reuse latest active order and normalize amount to configured value.
+      if (latest.status !== 'rejected') {
         if (latest.amount !== amount) {
           latest.amount = amount;
           await latest.save();
@@ -54,26 +55,14 @@ export async function POST(req: NextRequest) {
         const upiLink = buildUpiLink(latest.orderId, amount);
         return NextResponse.json({
           orderId: latest.orderId,
-          amount: latest.amount,
+          amount,
           upiLink,
           qrDataUrl: STATIC_QR_PATH,
           status: latest.status,
           utr: latest.utr,
         });
       }
-
-      if (latest.status === 'paid') {
-        const upiLink = buildUpiLink(latest.orderId, latest.amount);
-        return NextResponse.json({
-          orderId: latest.orderId,
-          amount: latest.amount,
-          upiLink,
-          qrDataUrl: STATIC_QR_PATH,
-          status: latest.status,
-          utr: latest.utr,
-        });
-      }
-      // If rejected, fall through to create a fresh pending order
+      // If rejected, fall through to create a fresh pending order.
     }
 
     const orderId = crypto.randomUUID();
