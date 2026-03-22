@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { events as eventData } from '@/app/events/components/events';
@@ -43,9 +42,6 @@ function FlipCard({ event, isLeft }: { event: Event; isLeft: boolean }) {
               {event.title}
             </h3>
             <div className="text-xs md:text-sm text-gray-400 font-mono mt-2">{event.time}</div>
-            <div className="text-xs text-cyan-400/60 font-mono mt-3 uppercase tracking-wide">
-              {!isMobile ? 'Hover to reveal →' : 'Tap to reveal →'}
-            </div>
           </div>
         </div>
 
@@ -72,12 +68,6 @@ function FlipCard({ event, isLeft }: { event: Event; isLeft: boolean }) {
               ) : null}
             </div>
           </div>
-          <Link
-            href={event.href || `/events/${event.id}`}
-            className="px-4 py-2 text-center bg-gradient-to-r from-cyan-500 to-magenta-500 text-white text-sm font-bold rounded hover:from-cyan-400 hover:to-magenta-400 transition-all duration-300 transform hover:scale-105 w-full"
-          >
-            View details
-          </Link>
         </div>
       </div>
       <style jsx>{`

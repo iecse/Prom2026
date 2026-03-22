@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { events } from './components/events';
@@ -233,9 +232,6 @@ export default function EventsPage() {
                   >
                     {state?.registered ? 'Registered' : state?.registering ? 'Registering...' : 'Register'}
                   </button>
-                  <Link href={`/events/${event.id}`} className="text-sm font-semibold text-cyan-300 hover:text-white">
-                    Details
-                  </Link>
                 </div>
               </article>
             );

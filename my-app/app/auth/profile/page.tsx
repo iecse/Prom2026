@@ -3,7 +3,6 @@
 import { useEffect, useState, type InputHTMLAttributes } from 'react';
 import { useRouter } from 'next/navigation';
 import NeonShell from '@/app/components/NeonShell';
-import branches from '@/data/branches.json';
 
 interface ProfileResponse {
   user: {
@@ -15,7 +14,6 @@ interface ProfileResponse {
     paymentStatus?: string;
     transactionId?: string;
     regNo?: string;
-    branch?: string;
     freePass?: boolean;
     memberId?: string;
   };
@@ -62,7 +60,6 @@ export default function ProfilePage() {
             lastName: data.user.lastName,
             phone: data.user.phone,
             regNo: data.user.regNo,
-            branch: data.user.branch,
           });
         }
       } catch {
@@ -100,7 +97,6 @@ export default function ProfilePage() {
           lastName: form.lastName,
           phone: form.phone,
           regNo: form.regNo,
-          branch: form.branch,
         }),
       });
 
@@ -116,7 +112,6 @@ export default function ProfilePage() {
         lastName: data.user.lastName,
         phone: data.user.phone,
         regNo: data.user.regNo,
-        branch: data.user.branch,
       });
       setEditing(false);
     } catch {
@@ -186,7 +181,6 @@ export default function ProfilePage() {
                       lastName: profile.lastName,
                       phone: profile.phone,
                       regNo: profile.regNo,
-                      branch: profile.branch,
                     });
                   }
                   setError(null);
@@ -241,15 +235,7 @@ export default function ProfilePage() {
           readValue={profile.regNo || '—'}
           editing={editing}
           onChange={updateField('regNo')}
-          inputProps={{ maxLength: 9, pattern: '\\d{9}', inputMode: 'numeric' }}
-        />
-        <EditableInfo
-          label="Branch"
-          value={form.branch || ''}
-          readValue={profile.branch || '—'}
-          editing={editing}
-          onChange={updateField('branch')}
-          options={branches}
+          inputProps={{ maxLength: 12, pattern: '\\d{9}(\\d{3})?', inputMode: 'numeric' }}
         />
         <InfoCard label="Member ID" value={profile.memberId || '—'} />
         <InfoCard label="Free pass" value={profile.freePass ? 'Yes' : 'No'} />

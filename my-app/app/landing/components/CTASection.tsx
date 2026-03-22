@@ -1,13 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-
-const CTA_STATS = [
-  { num: 500, label: 'PARTICIPANTS', color: 'cyan' },
-  { num: 72, label: 'HOURS OF INNOVATION', suffix: 'H', color: 'magenta' },
-  { num: 30000, label: 'IN PRIZES', prefix: '₹', color: 'cyan' },
-  { num: 4, label: 'TECH Domains', suffix: '', color: 'magenta' },
-];
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -16,32 +9,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function CTASection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const countersRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  const animateCounters = useCallback(() => {
-    CTA_STATS.forEach((stat, index) => {
-      const el = countersRef.current[index];
-      if (!el) return;
-
-      const numElement = el.querySelector('.stat-num') as HTMLElement | null;
-      if (!numElement) return;
-
-      const targets = { value: 0 };
-
-      gsap.to(targets, {
-        value: stat.num,
-        duration: 2,
-        ease: 'power2.out',
-        delay: index * 0.15,
-        onUpdate: function () {
-          const prefix = stat.prefix || '';
-          const suffix = stat.suffix || '';
-          numElement.textContent = `${prefix}${Math.round(targets.value).toLocaleString()}${suffix}`;
-        },
-      });
-    });
-  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -80,21 +47,10 @@ export default function CTASection() {
       }
     );
 
-    // Counter animation trigger
-    ScrollTrigger.create({
-      trigger: section,
-      onEnter: () => {
-        if (!hasAnimated) {
-          animateCounters();
-          setHasAnimated(true);
-        }
-      },
-    });
-
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [animateCounters, hasAnimated]);
+  }, []);
 
   return (
     <section
@@ -136,6 +92,11 @@ export default function CTASection() {
               JOIN THE REVOLUTION
             </span>
           </div>
+          <div className="flex justify-center mb-6">
+            <span className="rounded-full border border-cyan-300/40 bg-cyan-400/10 px-4 py-2 text-cyan-300 font-mono text-xs md:text-sm tracking-widest uppercase">
+              Prize Pool: Rs. 20,000+
+            </span>
+          </div>
           <h2 className="cta-title text-5xl md:text-6xl font-black text-white tracking-tight mb-6">
             Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-magenta-500">IGNITE</span>
             <br />
@@ -163,45 +124,6 @@ export default function CTASection() {
           >
             <span className="text-center">⚡ Register for Prometheus</span>
           </motion.a>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 border-t border-cyan-400/20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, staggerChildren: 0.1 }}
-          viewport={{ once: true }}
-        >
-          {CTA_STATS.map((stat, index) => (
-            <motion.div
-              key={index}
-              ref={(el) => {
-                if (el) countersRef.current[index] = el;
-              }}
-              className="text-center group"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5 }}
-            >
-              <div
-                className={`stat-num text-3xl md:text-4xl font-black mb-2 drop-shadow-lg ${
-                  stat.color === 'cyan'
-                    ? 'text-cyan-400 group-hover:text-cyan-300'
-                    : 'text-magenta-500 group-hover:text-magenta-400'
-                } transition-colors`}
-              >
-                {stat.prefix}
-                {stat.num}
-                {stat.suffix}
-              </div>
-              <div className="text-xs md:text-sm font-mono text-gray-400 tracking-widest uppercase">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
         </motion.div>
       </div>
     </section>

@@ -4,7 +4,6 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import NeonShell from '@/app/components/NeonShell';
-import branches from '@/data/branches.json';
 
 type FormState = {
     firstName: string;
@@ -12,7 +11,6 @@ type FormState = {
     email: string;
     phone: string;
     regNo: string;
-    branch: string;
     password: string;
     passwordConfirm: string;
     memberId: string;
@@ -26,7 +24,6 @@ export default function Register() {
         email: '',
         phone: '',
         regNo: '',
-        branch: '',
         password: '',
         passwordConfirm: '',
         memberId: '',
@@ -37,7 +34,7 @@ export default function Register() {
     const [formErrors, setFormErrors] = useState<string[]>([]);
 
     const updateField = (key: keyof FormState) =>
-        (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        (e: ChangeEvent<HTMLInputElement>) => {
             setForm((prev) => ({ ...prev, [key]: e.target.value }));
         };
 
@@ -52,9 +49,7 @@ export default function Register() {
         if (!form.lastName.trim()) validationErrors.push('Last name is required');
         if (!/.+@.+\.com$/i.test(form.email.trim())) validationErrors.push('Email must contain @ and end with .com');
         if (!/^\d{10}$/.test(form.phone.trim())) validationErrors.push('Phone number must be 10 digits');
-        if (!/^\d{9}$/.test(form.regNo.trim())) validationErrors.push('Reg No must be 9 digits');
-        if (!form.branch) validationErrors.push('Branch is required');
-        if (!branches.includes(form.branch)) validationErrors.push('Select a valid branch');
+        if (!/^\d{9}(\d{3})?$/.test(form.regNo.trim())) validationErrors.push('Reg No must be 9 or 12 digits');
         if (!/^[A-Za-z0-9]{8,}$/.test(form.password)) validationErrors.push('Password must be at least 8 letters or digits');
         if (form.password !== form.passwordConfirm) validationErrors.push('Passwords do not match');
 
@@ -150,33 +145,14 @@ export default function Register() {
                         <input
                             type="text"
                             required
-                            maxLength={9}
+                            maxLength={12}
                             inputMode="numeric"
-                            title="Enter 9 digits"
+                            title="Enter 9 or 12 digits"
                             value={form.regNo}
                             onChange={updateField('regNo')}
                             className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
-                            placeholder="9 digit reg no"
+                            placeholder="9 or 12 digit reg no"
                         />
-                    </label>
-
-                    <label className="flex flex-col gap-1 text-white">
-                        <span className="text-sm font-medium text-cyan-200">Branch</span>
-                        <select
-                            required
-                            value={form.branch}
-                            onChange={updateField('branch')}
-                            className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
-                        >
-                            <option value="" disabled>
-                                Select branch
-                            </option>
-                            {branches.map((b) => (
-                                <option key={b} value={b}>
-                                    {b}
-                                </option>
-                            ))}
-                        </select>
                     </label>
 
                     <label className="flex flex-col gap-1 text-white">

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireUser } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
-import branches from '@/data/branches.json';
 
 export async function GET(req: NextRequest) {
   await connectDB();
@@ -17,15 +16,14 @@ export async function PUT(req: NextRequest) {
   if (userOrResponse instanceof Response) return userOrResponse;
 
   try {
-    const { firstName, lastName, phone, regNo, branch } = await req.json();
+    const { firstName, lastName, phone, regNo } = await req.json();
 
     const cleanFirst = typeof firstName === 'string' ? firstName.trim() : '';
     const cleanLast = typeof lastName === 'string' ? lastName.trim() : '';
     const cleanPhone = typeof phone === 'string' ? phone.trim() : '';
     const cleanRegNo = typeof regNo === 'string' ? regNo.trim() : '';
-    const cleanBranch = typeof branch === 'string' ? branch.trim() : '';
 
-    if (!cleanFirst || !cleanLast || !cleanPhone || !cleanRegNo || !cleanBranch) {
+    if (!cleanFirst || !cleanLast || !cleanPhone || !cleanRegNo) {
       return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
     }
 
@@ -33,19 +31,14 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ message: 'Phone number must be 10 digits' }, { status: 400 });
     }
 
-    if (!/^\d{9}$/.test(cleanRegNo)) {
-      return NextResponse.json({ message: 'Reg No must be 9 digits' }, { status: 400 });
-    }
-
-    if (!branches.includes(cleanBranch)) {
-      return NextResponse.json({ message: 'Select a valid branch' }, { status: 400 });
+    if (!/^\d{9}(\d{3})?$/.test(cleanRegNo)) {
+      return NextResponse.json({ message: 'Reg No must be 9 or 12 digits' }, { status: 400 });
     }
 
     userOrResponse.firstName = cleanFirst;
     userOrResponse.lastName = cleanLast;
     userOrResponse.phone = cleanPhone;
     userOrResponse.regNo = cleanRegNo;
-    userOrResponse.branch = cleanBranch;
 
     await userOrResponse.save();
 
@@ -64,7 +57,6 @@ export async function PUT(req: NextRequest) {
         email: fresh.email,
         phone: fresh.phone,
         regNo: fresh.regNo,
-        branch: fresh.branch,
         paymentStatus: fresh.paymentStatus,
         transactionId: fresh.transactionId,
         freePass: fresh.freePass,

@@ -3,7 +3,6 @@ import { connectDB } from '@/lib/db';
 import { generateToken } from '@/lib/jwt';
 import User from '@/lib/models/user';
 import AccessCode from '@/lib/models/accessCode';
-import branches from '@/data/branches.json';
 
 export async function POST(req: NextRequest) {
   await connectDB();
@@ -17,7 +16,6 @@ export async function POST(req: NextRequest) {
       password,
       passwordConfirm,
       regNo,
-      branch,
       memberId,
     } = await req.json();
 
@@ -26,10 +24,9 @@ export async function POST(req: NextRequest) {
     const cleanEmail = typeof email === 'string' ? email.trim() : '';
     const cleanPhone = typeof phone === 'string' ? phone.trim() : '';
     const cleanRegNo = typeof regNo === 'string' ? regNo.trim() : '';
-    const cleanBranch = typeof branch === 'string' ? branch : '';
     const cleanMemberId = typeof memberId === 'string' ? memberId.trim() : '';
 
-    if (!cleanFirst || !cleanLast || !cleanEmail || !cleanPhone || !cleanRegNo || !cleanBranch || !password || !passwordConfirm) {
+    if (!cleanFirst || !cleanLast || !cleanEmail || !cleanPhone || !cleanRegNo || !password || !passwordConfirm) {
       return NextResponse.json({ message: 'Please provide all required fields' }, { status: 400 });
     }
 
@@ -41,12 +38,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Phone number must be 10 digits' }, { status: 400 });
     }
 
-    if (!/^\d{9}$/.test(cleanRegNo)) {
-      return NextResponse.json({ message: 'Reg No must be 9 digits' }, { status: 400 });
-    }
-
-    if (!branches.includes(cleanBranch)) {
-      return NextResponse.json({ message: 'Select a valid branch' }, { status: 400 });
+    if (!/^\d{9}(\d{3})?$/.test(cleanRegNo)) {
+      return NextResponse.json({ message: 'Reg No must be 9 or 12 digits' }, { status: 400 });
     }
 
     if (!/^[A-Za-z0-9]{8,}$/.test(password)) {
@@ -97,7 +90,6 @@ export async function POST(req: NextRequest) {
         phone: cleanPhone,
         password,
         regNo: cleanRegNo,
-        branch: cleanBranch,
         memberId: cleanMemberId || undefined,
         freePass,
       });
