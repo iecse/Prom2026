@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import QRCode from 'qrcode';
 import crypto from 'crypto';
 import { connectDB } from '@/lib/db';
 import { requireUser } from '@/lib/auth';
 import Order from '@/lib/models/order';
+
+const STATIC_QR_PATH = '/upi-qr.png';
 
 function ensureEnv(name: string): string {
   const value = process.env[name];
@@ -51,12 +52,11 @@ export async function POST(req: NextRequest) {
         }
 
         const upiLink = buildUpiLink(latest.orderId, amount);
-        const qrDataUrl = await QRCode.toDataURL(upiLink);
         return NextResponse.json({
           orderId: latest.orderId,
           amount: latest.amount,
           upiLink,
-          qrDataUrl,
+          qrDataUrl: STATIC_QR_PATH,
           status: latest.status,
           utr: latest.utr,
         });
@@ -64,12 +64,11 @@ export async function POST(req: NextRequest) {
 
       if (latest.status === 'paid') {
         const upiLink = buildUpiLink(latest.orderId, latest.amount);
-        const qrDataUrl = await QRCode.toDataURL(upiLink);
         return NextResponse.json({
           orderId: latest.orderId,
           amount: latest.amount,
           upiLink,
-          qrDataUrl,
+          qrDataUrl: STATIC_QR_PATH,
           status: latest.status,
           utr: latest.utr,
         });
@@ -79,7 +78,6 @@ export async function POST(req: NextRequest) {
 
     const orderId = crypto.randomUUID();
     const upiLink = buildUpiLink(orderId, amount);
-    const qrDataUrl = await QRCode.toDataURL(upiLink);
 
     await Order.create({
       orderId,
@@ -88,7 +86,7 @@ export async function POST(req: NextRequest) {
       user: userOrResponse._id,
     });
 
-    return NextResponse.json({ orderId, amount, upiLink, qrDataUrl, status: 'pending', utr: null });
+    return NextResponse.json({ orderId, amount, upiLink, qrDataUrl: STATIC_QR_PATH, status: 'pending', utr: null });
   } catch (error) {
     return NextResponse.json({ message: 'Could not create order', error: (error as Error).message }, { status: 500 });
   }

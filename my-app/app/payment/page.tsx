@@ -161,7 +161,7 @@ export default function PaymentPage() {
             <div className="mb-3 text-sm text-gray-300">Scan to pay</div>
             <div className="relative flex items-center justify-center rounded-lg border border-cyan-400/30 bg-black/60 p-4">
               {order?.qrDataUrl ? (
-                // Simple QR rendering from server-generated data URL
+                // QR is served from a static image in /public
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={order.qrDataUrl} alt="UPI QR" className="h-52 w-52" />
               ) : (
