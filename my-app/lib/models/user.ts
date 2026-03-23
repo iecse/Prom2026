@@ -9,6 +9,7 @@ export const EVENT_NAMES = [
   'techQuiz',
   'ooc',
   'nearProtocol',
+  'negSpace', // Added Negative Space event
   // Legacy spellings kept for compatibility
   'Enigma',
   'Order of Chaos',
