@@ -62,26 +62,39 @@ export async function POST(req: NextRequest) {
     }
 
     let freePass = false;
-    let claimedCode: string | null = null;
+    let claimedCode: { regno: string; memberId: string } | null = null;
 
-    if (cleanMemberId) {
-      const normalizedCode = cleanMemberId.toUpperCase();
+    // New logic: check reg_no and member_id pair
+    if (cleanMemberId && cleanRegNo) {
+      // Normalize for case-insensitive matching
+      const normRegNo = cleanRegNo.toUpperCase();
+      const normMemberId = cleanMemberId.toUpperCase();
+      // Find and mark as used atomically
       const reserved = await AccessCode.findOneAndUpdate(
-        { code: normalizedCode, used: false },
-        { used: true, usedAt: new Date() },
+        {
+          regno: normRegNo,
+          memberId: normMemberId,
+          used: false,
+        },
+        {
+          used: true,
+          usedAt: new Date(),
+          usedByUsername: cleanUsername,
+        },
         { returnDocument: 'after' }
       );
 
       if (!reserved) {
-        const exists = await AccessCode.findOne({ code: normalizedCode }).lean();
+        // Check if the pair exists but is used, or doesn't exist at all
+        const exists = await AccessCode.findOne({ regno: normRegNo, memberId: normMemberId }).lean();
         return NextResponse.json(
-          { message: exists ? 'This member ID has already been used' : 'Invalid member ID' },
+          { message: exists ? 'This reg no + member id has already been used' : 'Invalid reg no or member id' },
           { status: exists ? 409 : 400 }
         );
       }
 
       freePass = true;
-      claimedCode = normalizedCode;
+      claimedCode = { regno: normRegNo, memberId: normMemberId };
     }
 
     let newUser;
@@ -99,7 +112,10 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       // rollback claimed code if user creation fails
       if (claimedCode) {
-        await AccessCode.updateOne({ code: claimedCode }, { used: false, usedBy: null, usedAt: null });
+        await AccessCode.updateOne(
+          { regno: claimedCode.regno, memberId: claimedCode.memberId },
+          { used: false, usedBy: null, usedAt: null, usedByUsername: null }
+        );
       }
       const error = err as Error & { code?: number; message: string };
       if (error?.code === 11000) {
@@ -113,8 +129,8 @@ export async function POST(req: NextRequest) {
 
     if (claimedCode) {
       await AccessCode.updateOne(
-        { code: claimedCode },
-        { used: true, usedBy: newUser._id, usedAt: new Date() }
+        { regno: claimedCode.regno, memberId: claimedCode.memberId },
+        { used: true, usedBy: newUser._id, usedAt: new Date(), usedByUsername: cleanUsername }
       );
     }
 
