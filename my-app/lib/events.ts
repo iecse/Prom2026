@@ -7,6 +7,7 @@ export const AVAILABLE_EVENTS = [
 	'techQuiz',
 	'ooc',
 	'nearProtocol',
+	'negSpace',
 	// Legacy names kept for compatibility
 	'Enigma',
 	'Order of Chaos',
