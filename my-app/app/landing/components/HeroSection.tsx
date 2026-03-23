@@ -139,6 +139,10 @@ export default function HeroSection() {
           </h1>
         </motion.div>
 
+        <p className="text-cyan-200 font-mono text-2xl tracking-[0.18em] uppercase mb-3">
+            Sponsored by NEAR Protocol
+          </p>
+
         {/* Tagline */}
         <motion.p
           className="hidden md:block text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-gray-300 mb-6 sm:mb-8 md:mb-10 lg:mb-12 font-light tracking-wide leading-relaxed"
