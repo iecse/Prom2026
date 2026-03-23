@@ -117,10 +117,19 @@ export async function POST(req: NextRequest) {
           { used: false, usedBy: null, usedAt: null, usedByUsername: null }
         );
       }
-      const error = err as Error & { code?: number; message: string };
+      const error = err as Error & { code?: number; keyPattern?: Record<string, number>; keyValue?: Record<string, unknown> };
       if (error?.code === 11000) {
+        const field = Object.keys(error.keyPattern ?? {})[0] ?? 'unknown';
+        if (field === 'memberId') {
+          // memberId unique index in MongoDB is not sparse — multiple nulls clash.
+          // Fix: run db.users.dropIndex('memberId_1') and re-create with { sparse: true }.
+          return NextResponse.json(
+            { message: 'Registration failed due to a database index conflict on memberId. Please contact support.' },
+            { status: 500 }
+          );
+        }
         return NextResponse.json(
-          { message: 'User with this username or phone already exists' },
+          { message: `User with this ${field} already exists` },
           { status: 409 }
         );
       }
