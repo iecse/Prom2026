@@ -18,6 +18,9 @@ export default function LandingPage() {
             Prize Pool: Rs. 20,000+
           </p>
           <h3 className="text-2xl font-bold text-cyan-400 tracking-widest mb-2">PROMETHEUS</h3>
+          <p className="text-cyan-200 font-mono text-xs tracking-[0.18em] uppercase mb-3">
+            Sponsored by NEAR Protocol
+          </p>
           <p className="text-gray-400 font-mono text-sm tracking-widest">
             IECSE &nbsp;|&nbsp; INNOVATE WITHOUT LIMITS &nbsp;|&nbsp; 2026
           </p>
