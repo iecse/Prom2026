@@ -163,7 +163,7 @@ export default function HeroSection() {
             whileHover="whileHover"
             whileTap="whileTap"
           >
-            ⚡ Register Now
+            Register Now
           </motion.button>
         </Link>
       </motion.div>

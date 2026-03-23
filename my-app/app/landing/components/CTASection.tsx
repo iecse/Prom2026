@@ -122,7 +122,7 @@ export default function CTASection() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="text-center">⚡ Register for Prometheus</span>
+            <span className="text-center">Register for Prometheus</span>
           </motion.a>
         </motion.div>
       </div>

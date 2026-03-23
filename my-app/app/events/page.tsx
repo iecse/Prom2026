@@ -43,6 +43,7 @@ const resolveEventId = (name?: string | null): EventId | null => {
 
 export default function EventsPage() {
   const router = useRouter();
+  const [isAuthed, setIsAuthed] = useState(false);
   const [status, setStatus] = useState<Record<string, EventState>>({});
   const [statusLoading, setStatusLoading] = useState(true);
   const [freePass, setFreePass] = useState(false);
@@ -53,6 +54,7 @@ export default function EventsPage() {
 
   useEffect(() => {
     const token = getToken();
+    setIsAuthed(Boolean(token));
 
     const loadRegistered = async () => {
       try {
@@ -195,9 +197,9 @@ export default function EventsPage() {
             return (
               <article key={event.id} className="flex h-full flex-col rounded-lg border border-cyan-400/20 bg-white/5 p-5 shadow-[0_0_18px_rgba(0,245,255,0.12)]">
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">{event.date}</p>
+                  {isAuthed ? <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">{event.date}</p> : null}
                   <h2 className="text-xl font-semibold text-white">{event.title}</h2>
-                  <p className="text-sm text-gray-300">{event.time}</p>
+                  {isAuthed ? <p className="text-sm text-gray-300">{event.time}</p> : null}
                   {event.prizePool > 0 ? (
                     <p className="text-base font-bold text-cyan-300">Prize pool: ₹{event.prizePool.toLocaleString()}</p>
                   ) : null}
