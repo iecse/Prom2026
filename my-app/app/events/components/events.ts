@@ -2,7 +2,7 @@ export const events = [
   {
     id: "devWS",
     title: "Dev's Workshop",
-    date: "30st March 2026",
+    date: "30th March 2026",
     time: "5PM-8PM",
     about: "Intro to React for building interactive web apps, ending with deployment via GitHub and Vercel.",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",

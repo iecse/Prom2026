@@ -9,7 +9,7 @@ interface ProfileResponse {
     id: string;
     firstName: string;
     lastName: string;
-    email: string;
+    username: string;
     phone?: string;
     paymentStatus?: string;
     transactionId?: string;
@@ -160,7 +160,7 @@ export default function ProfilePage() {
       <div className="bg-white/5 border border-cyan-400/20 rounded-lg px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">Signed in</p>
-          <p className="text-sm text-gray-300">{profile.email}</p>
+          <p className="text-sm text-gray-300">{profile.username}</p>
         </div>
         <div className="flex gap-2">
           {editing ? (

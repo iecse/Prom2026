@@ -27,7 +27,7 @@ export interface RegisteredEvent {
 export interface IUser extends Document {
   firstName: string;
   lastName: string;
-  email: string;
+  username: string;
   phone: string;
   password: string;
   memberId?: string;
@@ -49,12 +49,13 @@ const UserSchema = new Schema<IUser>(
   {
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
-    email: {
+    username: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
+      trim: true,
+      match: [/^[a-zA-Z0-9_]{3,30}$/, 'Username must be 3-30 characters and contain only letters, numbers, or underscores'],
     },
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 6, select: false },

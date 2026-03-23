@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const {
       firstName,
       lastName,
-      email,
+      username,
       phone,
       password,
       passwordConfirm,
@@ -21,17 +21,20 @@ export async function POST(req: NextRequest) {
 
     const cleanFirst = typeof firstName === 'string' ? firstName.trim() : '';
     const cleanLast = typeof lastName === 'string' ? lastName.trim() : '';
-    const cleanEmail = typeof email === 'string' ? email.trim() : '';
+    const cleanUsername = typeof username === 'string' ? username.trim().toLowerCase() : '';
     const cleanPhone = typeof phone === 'string' ? phone.trim() : '';
     const cleanRegNo = typeof regNo === 'string' ? regNo.trim() : '';
     const cleanMemberId = typeof memberId === 'string' ? memberId.trim() : '';
 
-    if (!cleanFirst || !cleanLast || !cleanEmail || !cleanPhone || !cleanRegNo || !password || !passwordConfirm) {
+    if (!cleanFirst || !cleanLast || !cleanUsername || !cleanPhone || !cleanRegNo || !password || !passwordConfirm) {
       return NextResponse.json({ message: 'Please provide all required fields' }, { status: 400 });
     }
 
-    if (!/.+@.+\.com$/i.test(cleanEmail)) {
-      return NextResponse.json({ message: 'Email must contain @ and end with .com' }, { status: 400 });
+    if (!/^[a-zA-Z0-9_]{3,30}$/.test(cleanUsername)) {
+      return NextResponse.json(
+        { message: 'Username must be 3-30 characters and contain only letters, numbers, or underscores' },
+        { status: 400 }
+      );
     }
 
     if (!/^\d{10}$/.test(cleanPhone)) {
@@ -50,10 +53,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Passwords do not match' }, { status: 400 });
     }
 
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+    const existingUser = await User.findOne({ $or: [{ username: cleanUsername }, { phone: cleanPhone }] });
     if (existingUser) {
       return NextResponse.json(
-        { message: 'User with this email or phone already exists' },
+        { message: 'User with this username or phone already exists' },
         { status: 409 }
       );
     }
@@ -86,7 +89,7 @@ export async function POST(req: NextRequest) {
       newUser = await User.create({
         firstName: cleanFirst,
         lastName: cleanLast,
-        email: cleanEmail,
+        username: cleanUsername,
         phone: cleanPhone,
         password,
         regNo: cleanRegNo,
@@ -101,7 +104,7 @@ export async function POST(req: NextRequest) {
       const error = err as Error & { code?: number; message: string };
       if (error?.code === 11000) {
         return NextResponse.json(
-          { message: 'User with this email or phone already exists' },
+          { message: 'User with this username or phone already exists' },
           { status: 409 }
         );
       }
@@ -124,7 +127,7 @@ export async function POST(req: NextRequest) {
           id: newUser._id,
           firstName: newUser.firstName,
           lastName: newUser.lastName,
-          email: newUser.email,
+          username: newUser.username,
           phone: newUser.phone,
         },
         token,

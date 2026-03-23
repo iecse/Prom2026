@@ -12,7 +12,7 @@ type OrderItem = {
   user?: {
     firstName: string;
     lastName: string;
-    email: string;
+    username: string;
     phone?: string;
   };
 };
@@ -115,7 +115,7 @@ export default function AdminOrdersPage() {
               <div className="text-xs text-gray-400">Created: {new Date(order.createdAt).toLocaleString()}</div>
               {order.user && (
                 <div className="text-xs text-gray-300">
-                  {order.user.firstName} {order.user.lastName} — {order.user.email}
+                  {order.user.firstName} {order.user.lastName} — {order.user.username}
                   {order.user.phone ? ` — ${order.user.phone}` : ''}
                 </div>
               )}

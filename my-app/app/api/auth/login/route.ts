@@ -7,22 +7,23 @@ export async function POST(req: NextRequest) {
   await connectDB();
 
   try {
-    const { email, password } = await req.json();
+    const { username, password } = await req.json();
+    const cleanUsername = typeof username === 'string' ? username.trim().toLowerCase() : '';
 
-    if (!email || !password) {
-      return NextResponse.json({ message: 'Please provide email and password' }, { status: 400 });
+    if (!cleanUsername || !password) {
+      return NextResponse.json({ message: 'Please provide username and password' }, { status: 400 });
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ username: cleanUsername }).select('+password');
 
     if (!user) {
-      return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
+      return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
     }
 
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
-      return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
+      return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
     }
 
     const token = generateToken(user._id.toString());
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
         id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email,
+        username: user.username,
       },
       token,
     });

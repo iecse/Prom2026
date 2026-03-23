@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const filter: Record<string, unknown> = status ? { status } : {};
     const orders = await Order.find(filter)
       .sort({ createdAt: -1 })
-      .populate({ path: 'user', select: 'firstName lastName email phone' });
+      .populate({ path: 'user', select: 'firstName lastName username phone' });
 
     return NextResponse.json({ orders });
   } catch (error) {

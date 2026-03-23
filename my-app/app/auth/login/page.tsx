@@ -7,7 +7,7 @@ import NeonShell from '@/app/components/NeonShell';
 
 export default function Login() {
     const router = useRouter();
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function Login() {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ username, password }),
             });
 
             const data = await res.json();
@@ -54,14 +54,14 @@ export default function Login() {
             <div className="mx-auto flex max-w-xl flex-col gap-6">
                 <form className="grid grid-cols-1 gap-4 bg-white/5 border border-cyan-400/20 rounded-lg p-6 backdrop-blur" onSubmit={handleSubmit}>
                     <label className="flex flex-col gap-1 text-white">
-                        <span className="text-sm font-medium text-cyan-200">Email</span>
+                        <span className="text-sm font-medium text-cyan-200">Username</span>
                         <input
-                            type="email"
+                            type="text"
                             required
-                            value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            value={username}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                             className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
-                            placeholder="you@example.com"
+                            placeholder="your_username"
                         />
                     </label>
 

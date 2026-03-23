@@ -54,7 +54,7 @@ export async function PUT(req: NextRequest) {
         id: fresh._id?.toString?.() ?? '',
         firstName: fresh.firstName,
         lastName: fresh.lastName,
-        email: fresh.email,
+        username: fresh.username,
         phone: fresh.phone,
         regNo: fresh.regNo,
         paymentStatus: fresh.paymentStatus,

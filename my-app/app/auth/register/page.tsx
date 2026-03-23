@@ -8,7 +8,7 @@ import NeonShell from '@/app/components/NeonShell';
 type FormState = {
     firstName: string;
     lastName: string;
-    email: string;
+    username: string;
     phone: string;
     regNo: string;
     password: string;
@@ -21,7 +21,7 @@ export default function Register() {
     const [form, setForm] = useState<FormState>({
         firstName: '',
         lastName: '',
-        email: '',
+        username: '',
         phone: '',
         regNo: '',
         password: '',
@@ -47,9 +47,11 @@ export default function Register() {
 
         if (!form.firstName.trim()) validationErrors.push('First name is required');
         if (!form.lastName.trim()) validationErrors.push('Last name is required');
-        if (!/.+@.+\.com$/i.test(form.email.trim())) validationErrors.push('Email must contain @ and end with .com');
+        if (!/^[a-zA-Z0-9_]{3,30}$/.test(form.username.trim())) {
+            validationErrors.push('Username must be 3-30 characters and contain only letters, numbers, or underscores');
+        }
         if (!/^\d{10}$/.test(form.phone.trim())) validationErrors.push('Phone number must be 10 digits');
-        if (!/^\d{9}(\d{3})?$/.test(form.regNo.trim())) validationErrors.push('Reg No must be 9 or 12 digits');
+        if (!/^\d{9}(\d{3})?$/.test(form.regNo.trim())) validationErrors.push('Registration No must be 9 or 12 digits');
         if (!/^[A-Za-z0-9]{8,}$/.test(form.password)) validationErrors.push('Password must be at least 8 letters or digits');
         if (form.password !== form.passwordConfirm) validationErrors.push('Passwords do not match');
 
@@ -114,14 +116,14 @@ export default function Register() {
                     </label>
 
                     <label className="flex flex-col gap-1 text-white">
-                        <span className="text-sm font-medium text-cyan-200">Email</span>
+                        <span className="text-sm font-medium text-cyan-200">Username</span>
                         <input
-                            type="email"
+                            type="text"
                             required
-                            value={form.email}
-                            onChange={updateField('email')}
+                            value={form.username}
+                            onChange={updateField('username')}
                             className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
-                            placeholder="you@example.com"
+                            placeholder="your_username"
                         />
                     </label>
 
@@ -141,7 +143,7 @@ export default function Register() {
                     </label>
 
                     <label className="flex flex-col gap-1 text-white">
-                        <span className="text-sm font-medium text-cyan-200">Reg No</span>
+                        <span className="text-sm font-medium text-cyan-200">Registration No</span>
                         <input
                             type="text"
                             required
@@ -151,7 +153,7 @@ export default function Register() {
                             value={form.regNo}
                             onChange={updateField('regNo')}
                             className="rounded-md border border-cyan-400/30 bg-black/40 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
-                            placeholder="9 or 12 digit reg no"
+                            placeholder="9 or 12 digit registration no"
                         />
                     </label>
 
