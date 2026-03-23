@@ -186,9 +186,9 @@ function useTimelineScroll() {
 
 export default function TimelineSection() {
   const { sectionRef, spineProgress, visibleEvents } = useTimelineScroll();
-  const EVENTS: Event[] = eventData.map((event, index) => ({
+  const EVENTS: Event[] = eventData.map((event) => ({
     ...event,
-    num: `${String(index + 1).padStart(2, '0')} // EVENT`,
+    num: event.date,
   }));
 
   return (
