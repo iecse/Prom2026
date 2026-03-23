@@ -25,7 +25,7 @@ export const events = [
   },
   {
     id: "modelerWS",
-    title: "Modeler's Workshop",
+    title: "ML Unlocked",
     date: "1st April 2026",
     time: "5PM-8PM",
     about: "Covers ML fundamentals (supervised/unsupervised learning, reinforcement learning, transformers) with hands-on exercises. Tailored to prep participants for Enigma.",
