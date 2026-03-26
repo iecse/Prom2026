@@ -171,21 +171,7 @@ export default function PaymentPage() {
             <p className="mt-3 text-xs text-gray-400 text-center">
               Use your UPI app to pay. Keep the transaction/UTR ID for verification.
             </p>
-            <div className="mt-3 flex flex-col items-center gap-2">
-              <span className="text-[10px] uppercase tracking-[0.3em] text-gray-500">OR</span>
-              {order?.upiLink ? (
-                <a
-                  href={order.upiLink}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black shadow hover:bg-cyan-300 transition"
-                >
-                  Open UPI app
-                </a>
-              ) : (
-                <span className="text-xs text-gray-500">UPI link unavailable</span>
-              )}
-            </div>
+            {/* Removed Open UPI app button as requested */}
           </div>
 
           <form onSubmit={submitPayment} className="rounded-lg border border-cyan-400/20 bg-white/5 p-5 shadow-[0_0_12px_rgba(0,245,255,0.15)] flex flex-col gap-4">

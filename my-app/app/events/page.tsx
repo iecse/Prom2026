@@ -200,6 +200,7 @@ export default function EventsPage() {
                   {isAuthed ? <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">{event.date}</p> : null}
                   <h2 className="text-xl font-semibold text-white">{event.title}</h2>
                   {isAuthed ? <p className="text-sm text-gray-300">{event.time}</p> : null}
+                  <p className="text-xs text-cyan-200 font-mono">Venue: {event.venue}</p>
                   {event.prizePool > 0 ? (
                     <p className="text-base font-bold text-cyan-300">Prize pool: ₹{event.prizePool.toLocaleString()}</p>
                   ) : null}
