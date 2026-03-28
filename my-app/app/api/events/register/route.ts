@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireUser } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
-import { AVAILABLE_EVENTS, isPaymentRequired, type AvailableEvent } from '@/lib/events';
+import { AVAILABLE_EVENTS, canonicalizeEventName, isPaymentRequired } from '@/lib/events';
 import Order from '@/lib/models/order';
-
-function isValidEvent(event: string): event is AvailableEvent {
-  return AVAILABLE_EVENTS.includes(event as AvailableEvent);
-}
 
 export async function POST(req: NextRequest) {
   await connectDB();
@@ -21,14 +17,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Event name is required' }, { status: 400 });
     }
 
-    if (!isValidEvent(normalizedName)) {
-  return NextResponse.json(
-    { message: `Invalid event. Available events: ${AVAILABLE_EVENTS.join(', ')}` },
-    { status: 400 }
-  );
-}
-
-const eventId = normalizedName; // ✅ now properly typed
+    const eventId = canonicalizeEventName(normalizedName);
+    if (!eventId) {
+      return NextResponse.json(
+        { message: `Invalid event. Available events: ${AVAILABLE_EVENTS.join(', ')}` },
+        { status: 400 }
+      );
+    }
 
     const paymentNeeded = isPaymentRequired(eventId) && !userOrResponse.freePass;
 

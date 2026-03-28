@@ -1,22 +1,9 @@
 import bcrypt from 'bcryptjs';
 import mongoose, { Document, Model, Schema } from 'mongoose';
+import { CANONICAL_EVENTS, canonicalizeEventName, type CanonicalEvent } from '@/lib/events';
 
-export const EVENT_NAMES = [
-  'creatorWS',
-  'devWS',
-  'modelerWS',
-  'enigma',
-  'techQuiz',
-  'ooc',
-  'nearProtocol',
-  'negSpace', // Added Negative Space event
-  // Legacy spellings kept for compatibility
-  'Enigma',
-  'Order of Chaos',
-  'Tech Quiz',
-] as const;
-
-export type EventName = (typeof EVENT_NAMES)[number];
+export const EVENT_NAMES = CANONICAL_EVENTS;
+export type EventName = CanonicalEvent;
 export type PaymentStatus = 'not_paid' | 'pending' | 'paid';
 
 export interface RegisteredEvent {
@@ -92,11 +79,11 @@ UserSchema.methods.comparePassword = async function comparePassword(enteredPassw
 };
 
 UserSchema.methods.registerForEvent = function registerForEvent(eventName: EventName) {
-  const normalized = eventName.trim();
+  const normalized = canonicalizeEventName(eventName) ?? eventName;
 
   const alreadyRegistered = this.registeredEvents.some((event: RegisteredEvent) => {
     if (!event.eventName) return false;
-    return event.eventName.toLowerCase() === normalized.toLowerCase();
+    return (canonicalizeEventName(String(event.eventName)) ?? event.eventName) === normalized;
   });
   if (alreadyRegistered) {
     throw new Error(`Already registered for ${normalized}`);
@@ -110,7 +97,9 @@ UserSchema.methods.registerForEvent = function registerForEvent(eventName: Event
 };
 
 UserSchema.methods.getRegisteredEvents = function getRegisteredEvents() {
-  return this.registeredEvents.map((event: RegisteredEvent) => event.eventName as EventName);
+  return this.registeredEvents.map(
+    (event: RegisteredEvent) => (canonicalizeEventName(String(event.eventName)) ?? event.eventName) as EventName
+  );
 };
 
 const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
