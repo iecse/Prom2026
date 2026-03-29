@@ -103,7 +103,7 @@ export default function CTASection() {
             Your Potential?
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
-            Prometheus is where bold ideas are forged into reality. Two days. Unlimited ambition.
+            Prometheus is where bold ideas are forged into reality. Five days. Unlimited ambition.
             One chance to prove what you&apos;re made of.
           </p>
         </motion.div>
