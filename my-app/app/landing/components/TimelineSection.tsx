@@ -204,20 +204,19 @@ export default function TimelineSection() {
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section header */}
         <motion.div
-          className="mb-16"
+          className="mb-16 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-px bg-magenta-500" />
-            <span className="text-sm font-mono text-magenta-500 tracking-widest uppercase">
-              EVENT SCHEDULE
-            </span>
+          <div className="flex flex-col items-center gap-2 mb-4">
+            <span className="text-xs font-mono text-magenta-400 tracking-[0.3em] uppercase letter-spacing-wide">Event Schedule</span>
+            <div className="w-16 h-1 bg-gradient-to-r from-magenta-400 via-cyan-400 to-magenta-400 rounded-full mt-1 mb-2" />
           </div>
-          <h2 className="text-5xl md:text-6xl font-black text-white tracking-tight mb-2">THE SEQUENCE</h2>
-          <p className="text-gray-400 text-lg">Experience 6 incredible events across 2 days</p>
+          <h2 className="text-5xl md:text-6xl font-black text-white tracking-tight mb-3 drop-shadow-lg">THE SEQUENCE</h2>
+          <p className="text-cyan-300 text-lg md:text-xl font-mono tracking-wide mb-2">Experience <span className="font-bold text-magenta-400">8</span> incredible events across <span className="font-bold text-magenta-400">5 days</span></p>
+          <p className="text-gray-400 text-base md:text-lg font-light">Workshops, competitions, and more—join us for the full Prometheus experience!</p>
         </motion.div>
 
         {/* Timeline container */}

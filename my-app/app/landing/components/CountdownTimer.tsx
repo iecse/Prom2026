@@ -16,7 +16,8 @@ export default function CountdownTimer() {
 
   useEffect(() => {
     const calculateTime = () => {
-      const eventDate = new Date('2026-03-30T17:00:00').getTime();
+      // Prometheus starts March 31, 2026, 5:00 PM
+      const eventDate = new Date('2026-03-31T17:00:00').getTime();
       const now = new Date().getTime();
       const distance = eventDate - now;
 
