@@ -26,32 +26,11 @@ export async function POST(req: NextRequest) {
     const cleanRegNo = typeof regNo === 'string' ? regNo.trim() : '';
     const cleanMemberId = typeof memberId === 'string' ? memberId.trim() : '';
 
+
     if (!cleanFirst || !cleanLast || !cleanUsername || !cleanPhone || !cleanRegNo || !password || !passwordConfirm) {
       return NextResponse.json({ message: 'Please provide all required fields' }, { status: 400 });
     }
-
-    if (!/^[a-zA-Z0-9_]{3,30}$/.test(cleanUsername)) {
-      return NextResponse.json(
-        { message: 'Username must be 3-30 characters and contain only letters, numbers, or underscores' },
-        { status: 400 }
-      );
-    }
-
-    if (!/^\d{10}$/.test(cleanPhone)) {
-      return NextResponse.json({ message: 'Phone number must be 10 digits' }, { status: 400 });
-    }
-
-    if (!/^\d{9}(\d{3})?$/.test(cleanRegNo)) {
-      return NextResponse.json({ message: 'Reg No must be 9 or 12 digits' }, { status: 400 });
-    }
-
-    if (!/^[A-Za-z0-9]{8,}$/.test(password)) {
-      return NextResponse.json({ message: 'Password must be at least 8 letters or digits' }, { status: 400 });
-    }
-
-    if (password !== passwordConfirm) {
-      return NextResponse.json({ message: 'Passwords do not match' }, { status: 400 });
-    }
+    // Only require non-empty password, skip strength and match checks
 
     const existingUser = await User.findOne({ $or: [{ username: cleanUsername }, { phone: cleanPhone }] });
     if (existingUser) {

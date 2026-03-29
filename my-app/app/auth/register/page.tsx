@@ -44,7 +44,6 @@ export default function Register() {
         setFormErrors([]);
 
         const validationErrors: string[] = [];
-
         if (!form.firstName.trim()) validationErrors.push('First name is required');
         if (!form.lastName.trim()) validationErrors.push('Last name is required');
         if (!/^[a-zA-Z0-9_]{3,30}$/.test(form.username.trim())) {
@@ -52,8 +51,9 @@ export default function Register() {
         }
         if (!/^\d{10}$/.test(form.phone.trim())) validationErrors.push('Phone number must be 10 digits');
         if (!/^\d{9}(\d{3})?$/.test(form.regNo.trim())) validationErrors.push('Registration No must be 9 or 12 digits');
-        if (!/^[A-Za-z0-9]{8,}$/.test(form.password)) validationErrors.push('Password must be at least 8 letters or digits');
-        if (form.password !== form.passwordConfirm) validationErrors.push('Passwords do not match');
+        if (!form.password) validationErrors.push('Password is required');
+        if (!form.passwordConfirm) validationErrors.push('Password confirmation is required');
+        // Remove password strength and match checks
 
         if (validationErrors.length) {
             setFormErrors(validationErrors);

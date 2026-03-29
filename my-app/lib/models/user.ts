@@ -46,7 +46,7 @@ const UserSchema = new Schema<IUser>(
       match: [/^[a-zA-Z0-9_]{3,30}$/, 'Username must be 3-30 characters and contain only letters, numbers, or underscores'],
     },
     phone: { type: String, required: true, unique: true },
-    password: { type: String, required: true, minlength: 6, select: false },
+    password: { type: String, required: true, select: false },
     memberId: { type: String, trim: true },
     freePass: { type: Boolean, default: false },
     regNo: { type: String, trim: true, required: true },
