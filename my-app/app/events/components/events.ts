@@ -2,7 +2,7 @@ export const events = [
   {
     id: "devWS",
     title: "Dev's Workshop",
-    date: "30th March 2026",
+    date: "31st March 2026",
     time: "5PM-8PM",
     about: "Intro to React for building interactive web apps, ending with deployment via GitHub and Vercel.",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
@@ -15,7 +15,7 @@ export const events = [
   {
     id: "creatorWS",
     title: "Creator's Workshop",
-    date: "31th March 2026",
+    date: "TBD",
     time: "5PM-8PM",
     about: "Intro to UI/UX and graphic design using Figma. Covers typography, colour theory, and layout design through hands-on exercises. Good prep for Negative Space.",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
@@ -41,20 +41,20 @@ export const events = [
   {
     id: "negSpace",
     title: "Negative Space",
-    date: "1st April 2026",
+    date: "2nd April 2026",
     time: "All Day",
     about: "Team design competition (2-3 members) around a surprise problem statement. Any medium allowed, judged on creativity and relevance.",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
     href: "/events/modelerWS",
     requiresPass: false,
     registered: false,
-    prizePool: 0,
+    prizePool: 6000,
     venue: "Online",
   },
   {
     id: "enigma",
     title: "Enigma",
-    date: "2nd April 2026",
+    date: "3rd April 2026",
     time: "5PM-9PM",
     about: "4-hour solo Kaggle-style ML competition. Build models on real-world datasets and climb a live leaderboard ranked by accuracy.",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
@@ -67,7 +67,7 @@ export const events = [
   {
     id: "techQuiz",
     title: "TechQuiz(IECSE X LDQ)",
-    date: "3rd April 2026",
+    date: "4th April 2026",
     time: "10AM-1PM",
     about: "A technical quiz conducted in collaboration with the LDQ",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
@@ -80,7 +80,7 @@ export const events = [
   {
     id: "ooc",
     title: "Order Of Chaos",
-    date: "3rd April 2026",
+    date: "4th April 2026",
     time: "3PM-5PM",
     about: "Solo coding contest with 20 problems. Earn points by solving questions, challenge others to typing duels, and spend points in a shop.",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
@@ -93,7 +93,7 @@ export const events = [
   {
     id: "nearProtocol",
     title: "OpenClaw by NEAR Protocol",
-    date: "4th April 2026",
+    date: "5th April 2026",
     time: "5PM-8PM",
     about: "Talk + networking session by ArQ and one of the founder of NEAR Protocol on the NEAR Protocol cryptocurrency, followed by food.",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",

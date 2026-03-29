@@ -18,6 +18,7 @@ type EventState = {
 };
 
 type EventId = (typeof events)[number]['id'];
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/HlLgZxm8nGrBsGhhYZ7hhT';
 
 const normalize = (value?: string | null) => (value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -227,14 +228,25 @@ export default function EventsPage() {
                 ) : null}
 
                 <div className="mt-4 flex items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={state?.registered || state?.registering}
-                    onClick={() => handleRegister(event.id)}
-                    className="inline-flex flex-1 items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black border border-cyan-300 shadow-[0_0_14px_rgba(0,245,255,0.35)] transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {state?.registered ? 'Registered' : state?.registering ? 'Registering...' : 'Register'}
-                  </button>
+                  {state?.registered ? (
+                    <a
+                      href={WHATSAPP_GROUP_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex flex-1 items-center justify-center rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white border border-green-600 shadow-[0_0_14px_rgba(34,197,94,0.35)] transition hover:bg-green-600"
+                    >
+                      Join WhatsApp
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={state?.registering}
+                      onClick={() => handleRegister(event.id)}
+                      className="inline-flex flex-1 items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black border border-cyan-300 shadow-[0_0_14px_rgba(0,245,255,0.35)] transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {state?.registering ? 'Registering...' : 'Register'}
+                    </button>
+                  )}
                 </div>
               </article>
             );

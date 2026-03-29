@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/HlLgZxm8nGrBsGhhYZ7hhT";
+
 function Badge({ children, tone }: { children: React.ReactNode; tone: "purple" | "green" | "red" }) {
   const styles = {
     purple: "bg-purple-100 text-purple-700 border border-purple-200",
@@ -69,14 +71,25 @@ export function RegistrationSection({
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={handleRegister}
-          disabled={state.registered || state.loading}
-          className="inline-flex items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black border border-cyan-300 shadow-[0_0_12px_rgba(0,245,255,0.3)] transition hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {state.registered ? "Registered" : state.loading ? "Registering..." : "Register"}
-        </button>
+        {state.registered ? (
+          <a
+            href={WHATSAPP_GROUP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white border border-green-600 shadow-[0_0_12px_rgba(34,197,94,0.3)] transition hover:bg-green-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+          >
+            Join WhatsApp
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={handleRegister}
+            disabled={state.loading}
+            className="inline-flex items-center justify-center rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-black border border-cyan-300 shadow-[0_0_12px_rgba(0,245,255,0.3)] transition hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {state.loading ? "Registering..." : "Register"}
+          </button>
+        )}
       </div>
 
       {state.error ? (
