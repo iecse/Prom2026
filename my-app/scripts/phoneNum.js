@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import fs from 'fs';
 
 async function main() {
-  const uri = "mongouri";
+  const uri = "uri";
 
   const client = new MongoClient(uri);
 
