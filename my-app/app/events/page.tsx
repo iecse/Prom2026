@@ -18,7 +18,8 @@ type EventState = {
 };
 
 type EventId = (typeof events)[number]['id'];
-const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/HlLgZxm8nGrBsGhhYZ7hhT';
+const ENIGMA_WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/D3cZaWfY5Xg0dW1NiUgHjq?mode=gi_t';
+const DEFAULT_WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/HlLgZxm8nGrBsGhhYZ7hhT';
 
 const normalize = (value?: string | null) => (value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -230,7 +231,7 @@ export default function EventsPage() {
                 <div className="mt-4 flex items-center gap-3">
                   {state?.registered ? (
                     <a
-                      href={WHATSAPP_GROUP_LINK}
+                      href={event.id === 'enigma' ? ENIGMA_WHATSAPP_GROUP_LINK : DEFAULT_WHATSAPP_GROUP_LINK}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex flex-1 items-center justify-center rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white border border-green-600 shadow-[0_0_14px_rgba(34,197,94,0.35)] transition hover:bg-green-600"
