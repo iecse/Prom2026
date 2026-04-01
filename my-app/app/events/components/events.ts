@@ -62,7 +62,7 @@ export const events = [
     requiresPass: true,
     registered: false,
     prizePool: 7500,
-    venue: "AB5 - 205",
+    venue: "Online",
   },
   {
     id: "techQuiz",

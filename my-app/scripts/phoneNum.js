@@ -2,6 +2,7 @@ import { MongoClient } from 'mongodb';
 import fs from 'fs';
 
 async function main() {
+  // Replace <username> and <password> with your actual MongoDB Atlas credentials
   const uri = "uri";
 
   const client = new MongoClient(uri);
@@ -9,10 +10,18 @@ async function main() {
   try {
     await client.connect();
 
-    const phones = await client
+    const filter = { 'registeredEvents.eventName': 'negSpace' };
+    const project = { phone: 1, _id: 0 };
+
+    const cursor = client
       .db('test')
       .collection('users')
-      .distinct('phone');
+      .find(filter, { projection: project });
+
+    const phones = [];
+    await cursor.forEach(doc => {
+      if (doc.phone) phones.push(doc.phone);
+    });
 
     // Convert to plain text (one per line)
     const data = phones.join('\n');
